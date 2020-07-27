@@ -72,7 +72,7 @@ namespace BondAnalytics
             {
                 MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
                 this.Hide();
-                After_login after_Login = new After_login(user.Text, pass.Password.ToString());
+                var after_Login = new After_login(user.Text, pass.Password.ToString());
                 after_Login.Show();
                 SetCredentials("Bond_calculator", user.Text, pass.Password, PersistanceType.LocalComputer);
                 ok = true;
@@ -97,8 +97,6 @@ namespace BondAnalytics
                 MessageBox.Show("Bye");
                 Application.Current.Shutdown();
             }
-
-
         }
 
         private void SetCredentials(string v, string text, string password, object localComputer)

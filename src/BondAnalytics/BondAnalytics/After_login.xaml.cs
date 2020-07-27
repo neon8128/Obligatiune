@@ -39,32 +39,41 @@ namespace BondAnalytics
         }
 
 
-
-        public bool Verify(string user, string pass)
+        /// <summary>
+        ///    if the password stored in the table users matches Pass return true; otherwise return false
+        /// </summary>
+        /// <param name="User"></param>
+        /// <param name="Pass"></param>
+        /// <returns></returns>
+        public bool Verify(string User, string Pass)
         {
             string test_pass = null;
-            string connection = "server=localhost;port=3306;uid=" + user + ";pwd=" + acquired_pass + ";database=bond;charset=utf8;SslMode=none";
+            string connection = "server=localhost;port=3306;uid=" + User + ";pwd=" + acquired_pass + ";database=bond;charset=utf8;SslMode=none";
 
-            using (MySqlConnection conn = new MySqlConnection(connection))
+            using (var conn = new MySqlConnection(connection))
             {
-                conn.Open();
+                conn.Open();    // open the connection
+                                // question: what happens if Open() fails / throws exception???
 
-                using (var cmd = new MySqlCommand("SELECT password FROM user where username=@user", conn))
+                var sqlQuery = $"SELECT password FROM user where username='{user}'";
+
+                String testPass = null;
+                using (var cmd = new MySqlCommand(sqlQuery, conn))
                 {
-                    cmd.Parameters.AddWithValue("@user", user);
-
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            test_pass = reader.GetString(0);
-                        }
-                    }
-                    conn.Close();
-                    if (test_pass == pass)
-                        return true;
+                    testPass = cmd.ExecuteScalar() as String;
                 }
-                return false;
+
+                conn.Close();   // close the connection????
+
+                // if the password stored in database is equal to teh one the user entered return true; false otherwise
+                if (testPass == Pass)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
         public bool Verify_with_credentials(string user)
@@ -136,9 +145,7 @@ namespace BondAnalytics
         {
             string ip = GetLocalIPAddress();
             string pc = System.Environment.MachineName;
-            DateTime time = DateTime.Now;
-            string format = "d M yyyy HH:mm:s ";
-
+            var time = DateTime.Now;
 
             string connection = "server=localhost;port=3306;uid=" + user + ";pwd=" + acquired_pass + ";database=bond;charset=utf8;SslMode=none";
 
@@ -146,25 +153,18 @@ namespace BondAnalytics
             {
                 conn.Open();
 
-                using (var cmd = new MySqlCommand("INSERT INTO `audit`(`username`, `TS`, `details`, `machine_name`, `ip`) VALUES (@username,@TS,@details,@machine,@ip)", conn))
+                using (var cmd = new MySqlCommand("INSERT INTO audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", conn))
                 {
-                    cmd.Parameters.AddWithValue("@username", user.ToString());
-                    cmd.Parameters.AddWithValue("@TS", time.ToString(format));
+                    cmd.Parameters.AddWithValue("@username", user);
+                    cmd.Parameters.AddWithValue("@TS", time);
                     cmd.Parameters.AddWithValue("@details", "user logged in");
-                    cmd.Parameters.AddWithValue("@machine", pc.ToString());
-                    cmd.Parameters.AddWithValue("@ip", ip.ToString());
+                    cmd.Parameters.AddWithValue("@machine", pc);
+                    cmd.Parameters.AddWithValue("@ip", ip);
                     cmd.ExecuteNonQuery();
 
                     conn.Close();
-
                 }
-
             }
-
-
-
-
-
         }
 
         public static string GetLocalIPAddress()
