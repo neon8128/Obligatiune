@@ -22,8 +22,8 @@ namespace BondAnalytics
     /// </summary>
     public partial class Bond : Window
     {
-        private string user;
-        private string acquired_pass;
+        private String _user;
+        private String _acquired_pass;
 
 
         public Bond()
@@ -32,18 +32,30 @@ namespace BondAnalytics
 
         }
 
-        public Bond(string user, string acquired_pass)
+        public Bond(String User, String Acquired_pass)
         {
             InitializeComponent();
-            this.user = user;
-            this.acquired_pass = acquired_pass;
+            this._user = User;
+            this._acquired_pass = Acquired_pass;
         }
 
+
+        /// <summary>
+        ///     Closing the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
 
+
+        /// <summary>
+        ///     LogOut button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void LogOut_Click(object sender, RoutedEventArgs e)
         {
             MainWindow main = new MainWindow();
@@ -51,6 +63,13 @@ namespace BondAnalytics
             main.Show();
         }
 
+
+
+        /// <summary>
+        ///     Selecting which page to access
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             int index = int.Parse(((Button)e.Source).Uid);
@@ -83,13 +102,15 @@ namespace BondAnalytics
                     this.Hide();
                     e1.Show();
                     break;
-
-
             }
-
-
         }
 
+
+        /// <summary>
+        ///     Going back to MainPage
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Home_Click(object sender, RoutedEventArgs e)
         {
             Real_main_window r1 = new Real_main_window();
@@ -97,21 +118,37 @@ namespace BondAnalytics
             r1.Show();
         }
 
+
+        /// <summary>
+        ///  Displaying selected  StartDate in textbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void StartDate(object sender, SelectionChangedEventArgs e)
         {
-
-            var date = Convert.ToDateTime(StartPick.Text).ToString("dd-MM-yyyy");
-            Start.Text = date.ToString();
-
+            
+            Start.Text = StartPick.Text;
         }
 
+        /// <summary>
+        ///     Displaying selected EndDate in textbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void EndDate(object sender, SelectionChangedEventArgs e)
         {
-            var date = Convert.ToDateTime(EndPick.Text).ToString("dd-MM-yyyy");
-            End.Text = date.ToString();
+          
+            End.Text = EndPick.Text;
+            
 
         }
 
+
+        /// <summary>
+        ///     if  pressed it will insert in the audit and bond table
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Save_Click(object sender, RoutedEventArgs e)
         {
             Insert_audit();
@@ -119,27 +156,31 @@ namespace BondAnalytics
 
         }
 
+
+        /// <summary>
+        ///     Inserting in the audit table in order to track user activity
+        /// </summary>
         public void Insert_audit()
         {
             string ip = GetLocalIPAddress();
             string pc = System.Environment.MachineName;
             DateTime time = DateTime.Now;
-            string format = "dd-MM-yyyy HH:mm:s ";
+           
 
 
-            string connection = "server=localhost;port=3306;uid=" + user + ";pwd=" + acquired_pass + ";database=bond;charset=utf8;SslMode=none";
+            string connection = "server=localhost;port=3306;uid=" + _user + ";pwd=" + _acquired_pass + ";database=bond;charset=utf8;SslMode=none";
 
-            using (MySqlConnection conn = new MySqlConnection(connection))
+            using (var conn = new MySqlConnection(connection))
             {
-                conn.Open();
+                //conn.Open();
 
                 using (var cmd = new MySqlCommand("INSERT INTO `audit`(`username`, `TS`, `details`, `machine_name`, `ip`) VALUES (@username,@TS,@details,@machine,@ip)", conn))
                 {
-                    cmd.Parameters.AddWithValue("@username", user.ToString());
-                    cmd.Parameters.AddWithValue("@TS", time.ToString(format));
+                    cmd.Parameters.AddWithValue("@username", _user);
+                    cmd.Parameters.AddWithValue("@TS", time);
                     cmd.Parameters.AddWithValue("@details", "bond");
-                    cmd.Parameters.AddWithValue("@machine", pc.ToString());
-                    cmd.Parameters.AddWithValue("@ip", ip.ToString());
+                    cmd.Parameters.AddWithValue("@machine", pc);
+                    cmd.Parameters.AddWithValue("@ip", ip);
                     cmd.ExecuteNonQuery();
 
                     conn.Close();
@@ -148,13 +189,17 @@ namespace BondAnalytics
 
             }
         }
+
+        /// <summary>
+        ///     Inserting in the bond table 
+        /// </summary>
         public void Insert_bond()
         {
-            int audit_id = 26;
+            int audit_id = 0;
             bool ok = false;
-            string connection = "server=localhost;port=3306;uid=" + user + ";pwd=" + acquired_pass + ";database=bond;charset=utf8;SslMode=none";
+            string connection = "server=localhost;port=3306;uid=" + _user + ";pwd=" + _acquired_pass + ";database=bond;charset=utf8;SslMode=none";
 
-            using (MySqlConnection conn = new MySqlConnection(connection))
+            using (var conn = new MySqlConnection(connection))
             {
                 conn.Open();
 
@@ -162,7 +207,7 @@ namespace BondAnalytics
                 {
                     cmd.Parameters.AddWithValue("@name", Name.Text);
                     cmd.Parameters.AddWithValue("@audit_id", audit_id);
-                    cmd.Parameters.AddWithValue("@interest_rate", Interest_rate.Text);
+                    cmd.Parameters.AddWithValue("@interest_rate", InterestRate.Text);
                     cmd.Parameters.AddWithValue("@ccy", Ccy.Text);
                     cmd.Parameters.AddWithValue("@principal", Principal.Text);
                     //cmd.Parameters.AddWithValue("@day_counting_convention", Day_Counting_Convention.Text);
@@ -179,6 +224,11 @@ namespace BondAnalytics
             if (ok) MessageBox.Show("ok");
         }
 
+
+        /// <summary>
+        ///     Get local ip address
+        /// </summary>
+        /// <returns></returns>
         public static string GetLocalIPAddress()
         {
             var host = Dns.GetHostEntry(Dns.GetHostName());
@@ -191,5 +241,19 @@ namespace BondAnalytics
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
+
+
+        /// <summary>
+        /// Making the window draggable
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+       
     }
 }
