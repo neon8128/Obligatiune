@@ -123,29 +123,6 @@ namespace BondAnalytics
             r1.Show();
         }
 
-
-        /// <summary>
-        ///  Displaying selected  StartDate in textbox
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void StartDate(object sender, SelectionChangedEventArgs e)
-        {
-            
-            Start.Text = StartPick.Text;
-        }
-
-        /// <summary>
-        ///     Displaying selected EndDate in textbox
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void EndDate(object sender, SelectionChangedEventArgs e)
-        {
-            End.Text = EndPick.Text;  
-        }
-
-
         /// <summary>
         ///     if  pressed it will insert in the audit and bond table
         /// </summary>
@@ -153,8 +130,8 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void SaveClick(object sender, RoutedEventArgs e)
         {
-            InsertAudit();
-            InsertBond();
+            var auditId = InsertAudit();
+            InsertBond(auditId);
 
         }
 
@@ -162,16 +139,19 @@ namespace BondAnalytics
         /// <summary>
         ///     Inserting in the audit table in order to track user activity
         /// </summary>
-        public void InsertAudit()
+        public UInt64 InsertAudit()
         {
             string ip = GetLocalIPAddress();
             string pc = System.Environment.MachineName;
             DateTime time = DateTime.Now;
+            UInt64 auditId = 0;
+            MySqlCommand cmd = null;
             String connection = ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
+
             using (var conn = new MySqlConnection(connection))
             {
                 conn.Open();
-                using (var cmd = new MySqlCommand("INSERT INTO bond.audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", conn))
+                using (cmd = new MySqlCommand("INSERT INTO bond.audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", conn))
                 {
                     cmd.Parameters.AddWithValue("@username", _user);
                     cmd.Parameters.AddWithValue("@TS", time);
@@ -179,34 +159,45 @@ namespace BondAnalytics
                     cmd.Parameters.AddWithValue("@machine", pc);
                     cmd.Parameters.AddWithValue("@ip", ip);
                     cmd.ExecuteNonQuery();
-                    conn.Close();
                 }
+
+                cmd = new MySqlCommand("select last_insert_id()", conn);
+            
+                auditId = (UInt64)cmd.ExecuteScalar();
+                cmd.Dispose();
+
+                conn.Close();
             }
+
+            return auditId;
         }
 
         /// <summary>
         ///     Inserting in the bond table 
         /// </summary>
-        public void InsertBond()
+        public void InsertBond(UInt64 AuditId)
         {
-            Int32 audit_id = GetLastAuditID();
-           
+            MySqlCommand cmd = null;
             String connection = ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
             using (var conn = new MySqlConnection(connection))
             {
                 try
                 {
                     conn.Open();
-                    using (var cmd = new MySqlCommand("INSERT INTO bond.bond(name, audit_id, interest_rate, ccy, principal,start_date,end_date) VALUES (@name,@audit_id,@interest_rate,@ccy,@principal,@start_date,@end_date)", conn))
+
+                    cmd = new MySqlCommand($"DELETE FROM bond.bond where Name = '{Name.Text}'", conn);
+                    var xxx = cmd.ExecuteNonQuery();
+
+                    using (cmd = new MySqlCommand("INSERT INTO bond.bond(name, audit_id, interest_rate, ccy, principal,start_date,end_date) VALUES (@name,@audit_id,@interest_rate,@ccy,@principal,@start_date,@end_date)", conn))
                     {
                         cmd.Parameters.AddWithValue("@name", Name.Text);
-                        cmd.Parameters.AddWithValue("@audit_id", audit_id);
-                        cmd.Parameters.AddWithValue("@interest_rate", InterestRate.Text);
+                        cmd.Parameters.AddWithValue("@audit_id", AuditId);
+                        cmd.Parameters.AddWithValue("@interest_rate", Double.Parse(InterestRate.Text));
                         cmd.Parameters.AddWithValue("@ccy", Ccy.Text);
                         cmd.Parameters.AddWithValue("@principal", Principal.Text);
-                        cmd.Parameters.AddWithValue("@day_counting_convention", DayCountingConvention.SelectedItem);
-                        cmd.Parameters.AddWithValue("@start_date", Start.Text);
-                        cmd.Parameters.AddWithValue("@end_date", End.Text);
+                        cmd.Parameters.AddWithValue("@day_counting_convention", DayCountingConvention.SelectedItem.ToString());
+                        cmd.Parameters.AddWithValue("@start_date", StartPick.DisplayDate);
+                        cmd.Parameters.AddWithValue("@end_date", EndPick.DisplayDate);
                         cmd.ExecuteNonQuery();
                         conn.Close();
                         MessageBox.Show("The operation was successful");
