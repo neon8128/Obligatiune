@@ -88,6 +88,7 @@
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -115,19 +116,21 @@
     <Compile Include="Bond.xaml.cs">
       <DependentUpon>Bond.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Connection.cs" />
     <Compile Include="Exchange.xaml.cs">
       <DependentUpon>Exchange.xaml</DependentUpon>
     </Compile>
     <Compile Include="FX.xaml.cs">
       <DependentUpon>FX.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Interest_rate.xaml.cs">
-      <DependentUpon>Interest_rate.xaml</DependentUpon>
+    <Compile Include="InterestRate.xaml.cs">
+      <DependentUpon>InterestRate.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Real_main_window.xaml.cs">
-      <DependentUpon>Real_main_window.xaml</DependentUpon>
+    <Compile Include="RealMainWindow.xaml.cs">
+      <DependentUpon>RealMainWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="After_login.xaml">
+    <Compile Include="Validate.cs" />
+    <Page Include="AfterLogin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -143,7 +146,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Interest_rate.xaml">
+    <Page Include="InterestRate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -151,8 +154,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="After_login.xaml.cs">
-      <DependentUpon>After_login.xaml</DependentUpon>
+    <Compile Include="AfterLogin.xaml.cs">
+      <DependentUpon>AfterLogin.xaml</DependentUpon>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
@@ -162,7 +165,7 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Real_main_window.xaml">
+    <Page Include="RealMainWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

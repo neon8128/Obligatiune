@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Configuration;
 
 namespace BondAnalytics
 {
@@ -23,20 +24,42 @@ namespace BondAnalytics
     /// </summary>
     public partial class MainWindow : Window
     {
-        int i = 0;
-        bool ok = false;
+        int _i = 0;
+        bool _ok = false;
+        
         public MainWindow()
         {
             InitializeComponent();
+            SizeToContent = System.Windows.SizeToContent.Manual;
+            
         }
 
-        public bool Connect(string a, string b)
+        /// <summary>
+        ///     This way the Window is draggable
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            string connection = "server=localhost;port=3306;uid=" + a + ";pwd=" + b + ";database=bond;charset=utf8;SslMode=none";
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
 
+        /// <summary>
+        ///     Verifying if it is possible to connect with given username and password; otherwise throw exception
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public bool Connect(string User, string Pass)
+        {
+            EditConfig(User,Pass);
+            String connection = ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
+            
+           // string connection = "server=localhost;port=3306;uid=" + User + ";pwd=" + Pass + ";database=bond;charset=utf8;SslMode=none";
             try
             {
-                using (MySqlConnection con = new MySqlConnection(connection))
+                using ( var con = new MySqlConnection(connection))
                 {
                     con.Open();
 
@@ -45,73 +68,76 @@ namespace BondAnalytics
             }
             catch (Exception e)
             {
-
+                MessageBox.Show(e.Message);
                 return false;
             }
 
         }
 
+        /// <summary>
+        /// Trying to connect to the db
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            string acquired_pass = GetCredential("Bond_calculator", user.Text);
+            String acquired_pass = GetCredential("Bond_calculator", user.Text); //Get user credentials 
+           
 
             //  Debug.Assert(GetCredential("Bond_calculator") == null);
 
-            if (acquired_pass != null)
+            if (acquired_pass != null) // if a password is saved in CredentialManager
             {
+               
                 MessageBox.Show("Your password was saved in WCM, let me grab it");
                 MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
                 this.Hide();
-                After_login after_Login = new After_login(user.Text, acquired_pass);
-                after_Login.Show();
-                ok = true;
+                var afterLogin = new After_login(user.Text, acquired_pass); //Go to the Login App page
+                afterLogin.Show();
+                _ok = true;
 
             }
-            if (Connect(user.Text, pass.Password))
+            
+             else if (Connect(user.Text,pass.Password)) // if the password stored in the user table matches the pass from passwordbox go; otherwise retry 
             {
+                
                 MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
                 this.Hide();
-                var after_Login = new After_login(user.Text, pass.Password.ToString());
+                var after_Login = new After_login(user.Text,pass.Password);
                 after_Login.Show();
                 SetCredentials("Bond_calculator", user.Text, pass.Password, PersistanceType.LocalComputer);
-                ok = true;
+                _ok = true;
 
             }
-            else
-            {
-
-                if (ok == false)
+            
+            
+                
+                if (_ok == false)   // if login failed try again for 3 times max.
                 {
-                    i++;
-                    MessageBox.Show("Try again!" + "\n" + "You have tried " + i + " out of 3");
-                    this.Close();
+                    _i++;
+                    MessageBox.Show("Try again!" + "\n" + "You have tried " + _i + " out of 3");
+                    //this.Close();
                 }
 
+            
 
-
-            }
-
-            if (i >= 3)
+            if (_i >= 3)
             {
                 MessageBox.Show("Bye");
                 Application.Current.Shutdown();
             }
         }
 
-        private void SetCredentials(string v, string text, string password, object localComputer)
-        {
-            throw new NotImplementedException();
-        }
 
-        private void c1_Checked(object sender, RoutedEventArgs e)
-        {
-
-            // if (c1.IsChecked ?? false)
-            // {
-            //     MessageBox.Show(pass_text.Password);
-            // }
-        }
+        /// <summary>
+        ///     username and password will be saved in the CredentialManager 
+        /// </summary>
+        /// <param name="target"></param>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="persistenceType"></param>
+        /// <returns></returns>
         public static bool SetCredentials(string target, string username, string password, PersistanceType persistenceType)
         {
 
@@ -123,6 +149,13 @@ namespace BondAnalytics
                 PersistanceType = persistenceType
             }.Save();
         }
+     
+        /// <summary>
+       /// Retrieve credentials from CredentialManager
+       /// </summary>
+       /// <param name="target"></param>
+       /// <param name="user"></param>
+       /// <returns></returns>
         public static string GetCredential(string target, string user)
         {
             var cm = new Credential
@@ -140,9 +173,37 @@ namespace BondAnalytics
             else return null;
         }
 
+
+        /// <summary>
+        /// Shutting down the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
         }
+
+
+
+        /// <summary>
+        /// Editing the app.config connection String with user credentials
+        /// </summary>
+        /// <param name="User"></param>
+        /// <param name="Pass"></param>
+        public void EditConfig(String User, String Pass)
+        {
+            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+            var connectionStringsSection = (ConnectionStringsSection)config.GetSection("connectionStrings");
+            if (connectionStringsSection != null)
+            {
+                connectionStringsSection.ConnectionStrings["MyDB"].ConnectionString = $"server=localhost;user='{User}';port=3306;password='{Pass}'";
+                config.Save();
+                ConfigurationManager.RefreshSection("connectionStrings");
+            }
+
+        }
+
+        
     }
 }
