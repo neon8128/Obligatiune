@@ -88,6 +88,7 @@
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.6.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -128,6 +129,7 @@
     <Compile Include="RealMainWindow.xaml.cs">
       <DependentUpon>RealMainWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Validate.cs" />
     <Page Include="AfterLogin.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
