@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 30, 2020 at 04:16 PM
+-- Generation Time: Aug 10, 2020 at 04:27 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.8
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `bond`
+-- Database: `bond_new`
 --
 
 -- --------------------------------------------------------
@@ -46,37 +46,14 @@ CREATE TABLE `bond` (
   `name` varchar(40) NOT NULL,
   `version` int(11) NOT NULL DEFAULT 1,
   `audit_id` int(11) DEFAULT NULL,
+  `username` varchar(35) DEFAULT NULL,
   `interest_rate` double DEFAULT NULL,
   `ccy` varchar(45) DEFAULT NULL,
   `principal` int(11) DEFAULT NULL,
-  `day_counting_convention` varchar(45) DEFAULT 'ACT/365',
+  `day_counting_convention` varchar(45) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Triggers `bond`
---
-DELIMITER $$
-CREATE TRIGGER `insert_in_bond_hist` AFTER INSERT ON `bond` FOR EACH ROW insert into bond_hist (audit_id,bond_name,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date)
-
-select audit_id,name,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date
-FROM bond as b
-WHERE b.name=new.name
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_in_bond_hist` AFTER UPDATE ON `bond` FOR EACH ROW insert into bond_hist (audit_id,bond_name,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date)
-
-select audit_id,name,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date
-FROM bond as b
-where b.name=new.name
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_version_bond` BEFORE UPDATE ON `bond` FOR EACH ROW set new.version=old.version+1
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -85,9 +62,9 @@ DELIMITER ;
 --
 
 CREATE TABLE `bond_hist` (
-  `hist_id` int(11) NOT NULL,
   `audit_id` int(11) DEFAULT NULL,
-  `bond_name` varchar(20) NOT NULL,
+  `username` varchar(45) DEFAULT NULL,
+  `name` varchar(40) NOT NULL,
   `version` int(11) NOT NULL DEFAULT 1,
   `interest_rate` double DEFAULT NULL,
   `ccy` varchar(45) DEFAULT NULL,
@@ -114,36 +91,6 @@ CREATE TABLE `fxr` (
   `audit_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Triggers `fxr`
---
-DELIMITER $$
-CREATE TRIGGER `insert_in_fxr_hist` AFTER INSERT ON `fxr` FOR EACH ROW insert into fxr_hist 
-(name,version,as_of_date,ccy1,ccy2,term,rate)
-
-SELECT name,version,as_of_date,ccy1,ccy2,term,rate
-
-from fxr as f
-
-where f.name=new.name
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_in_fxr_hist` AFTER UPDATE ON `fxr` FOR EACH ROW insert into fxr_hist 
-(name,version,as_of_date,ccy1,ccy2,term,rate)
-
-SELECT name,version,as_of_date,ccy1,ccy2,term,rate
-
-from fxr as f
-
-where f.name=new.name
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_version_fxr` BEFORE UPDATE ON `fxr` FOR EACH ROW set new.version=old.version+1
-$$
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
@@ -151,7 +98,6 @@ DELIMITER ;
 --
 
 CREATE TABLE `fxr_hist` (
-  `name` varchar(20) NOT NULL,
   `version` double NOT NULL DEFAULT 1,
   `as_of_date` date NOT NULL,
   `ccy1` varchar(5) NOT NULL,
@@ -178,36 +124,6 @@ CREATE TABLE `interest_rate` (
   `ccy` varchar(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
---
--- Triggers `interest_rate`
---
-DELIMITER $$
-CREATE TRIGGER `insert_in_interest_hist` AFTER INSERT ON `interest_rate` FOR EACH ROW insert into interest_rate_hist(name,as_of_date,version,term,date,rate,ccy) 
-   
-   select name,as_of_date,version,term,date,rate,ccy
-   from interest_rate as r
-   where r.name=new.name AND
-   		r.as_of_date=new.as_of_date AND
-        r.term=new.term AND
-        r.date=new.date
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_in_interest_hist` AFTER UPDATE ON `interest_rate` FOR EACH ROW insert into interest_rate_hist(name,as_of_date,version,term,date,rate,ccy) 
-   
-   select name,as_of_date,version,term,date,rate,ccy
-   from interest_rate as r
-   where r.name=new.name AND
-   		r.as_of_date=new.as_of_date AND
-        r.term=new.term AND
-        r.date=new.date
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_version_interest` BEFORE UPDATE ON `interest_rate` FOR EACH ROW set new.version=old.version+1
-$$
-DELIMITER ;
-
 -- --------------------------------------------------------
 
 --
@@ -215,7 +131,6 @@ DELIMITER ;
 --
 
 CREATE TABLE `interest_rate_hist` (
-  `interest_hist_id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
   `version` int(11) NOT NULL,
   `as_of_date` date NOT NULL,
@@ -246,44 +161,12 @@ CREATE TABLE `schedule` (
 
 CREATE TABLE `user` (
   `username` varchar(45) NOT NULL,
-  `audit_id` int(11) NOT NULL DEFAULT 3,
   `email` varchar(45) NOT NULL,
   `first_name` varchar(45) DEFAULT NULL,
   `last_name` varchar(45) DEFAULT NULL,
   `password` varchar(90) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
-  `version` double NOT NULL DEFAULT 1
+  `version` int(11) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
---
--- Triggers `user`
---
-DELIMITER $$
-CREATE TRIGGER `Insert_audit` BEFORE INSERT ON `user` FOR EACH ROW Insert into audit (username,TS,details)
-values (USER(),Now(),'added a user')
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `insert_in_user_hist` AFTER INSERT ON `user` FOR EACH ROW insert into user_hist (username,first_name,last_name,email,password) 
-	
-    select username,first_name,last_name,email,password
-  
-    from user as u
-    where u.username=new.username
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_in_user_hist` AFTER UPDATE ON `user` FOR EACH ROW insert into user_hist (username,first_name,last_name,email,password) 
-	
-    select username,first_name,last_name,email,password
-  
-    from user as u
-    where u.username=new.username
-$$
-DELIMITER ;
-DELIMITER $$
-CREATE TRIGGER `update_version_user` BEFORE UPDATE ON `user` FOR EACH ROW set new.version=old.version+1
-$$
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -292,8 +175,7 @@ DELIMITER ;
 --
 
 CREATE TABLE `user_hist` (
-  `id_hist` bigint(20) NOT NULL,
-  `version` double NOT NULL,
+  `version` int(11) NOT NULL,
   `username` varchar(45) NOT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(32) NOT NULL,
@@ -310,7 +192,7 @@ CREATE TABLE `user_hist` (
 --
 ALTER TABLE `audit`
   ADD PRIMARY KEY (`audit_id`),
-  ADD KEY `user_id_idx` (`username`);
+  ADD KEY `username` (`username`);
 
 --
 -- Indexes for table `bond`
@@ -323,9 +205,7 @@ ALTER TABLE `bond`
 -- Indexes for table `bond_hist`
 --
 ALTER TABLE `bond_hist`
-  ADD PRIMARY KEY (`hist_id`),
-  ADD KEY `bond_name` (`bond_name`),
-  ADD KEY `audit_id` (`audit_id`) USING BTREE;
+  ADD KEY `audit_id_bond_hist` (`audit_id`);
 
 --
 -- Indexes for table `fxr`
@@ -333,12 +213,6 @@ ALTER TABLE `bond_hist`
 ALTER TABLE `fxr`
   ADD PRIMARY KEY (`name`),
   ADD KEY `audit_id` (`audit_id`);
-
---
--- Indexes for table `fxr_hist`
---
-ALTER TABLE `fxr_hist`
-  ADD PRIMARY KEY (`name`);
 
 --
 -- Indexes for table `interest_rate`
@@ -351,7 +225,6 @@ ALTER TABLE `interest_rate`
 -- Indexes for table `interest_rate_hist`
 --
 ALTER TABLE `interest_rate_hist`
-  ADD PRIMARY KEY (`interest_hist_id`),
   ADD KEY `name` (`name`,`as_of_date`,`term`,`date`);
 
 --
@@ -365,14 +238,12 @@ ALTER TABLE `schedule`
 -- Indexes for table `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`username`),
-  ADD KEY `audit_id` (`audit_id`);
+  ADD PRIMARY KEY (`username`);
 
 --
 -- Indexes for table `user_hist`
 --
 ALTER TABLE `user_hist`
-  ADD PRIMARY KEY (`id_hist`),
   ADD KEY `username_idx` (`username`);
 
 --
@@ -386,24 +257,6 @@ ALTER TABLE `audit`
   MODIFY `audit_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `bond_hist`
---
-ALTER TABLE `bond_hist`
-  MODIFY `hist_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `interest_rate_hist`
---
-ALTER TABLE `interest_rate_hist`
-  MODIFY `interest_hist_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `user_hist`
---
-ALTER TABLE `user_hist`
-  MODIFY `id_hist` bigint(20) NOT NULL AUTO_INCREMENT;
-
---
 -- Constraints for dumped tables
 --
 
@@ -411,7 +264,7 @@ ALTER TABLE `user_hist`
 -- Constraints for table `audit`
 --
 ALTER TABLE `audit`
-  ADD CONSTRAINT `user_id` FOREIGN KEY (`username`) REFERENCES `user` (`username`);
+  ADD CONSTRAINT `username` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE SET NULL ON UPDATE SET NULL;
 
 --
 -- Constraints for table `bond`
@@ -423,8 +276,7 @@ ALTER TABLE `bond`
 -- Constraints for table `bond_hist`
 --
 ALTER TABLE `bond_hist`
-  ADD CONSTRAINT `audit_id_bond_hist` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`),
-  ADD CONSTRAINT `bond_name_hist` FOREIGN KEY (`bond_name`) REFERENCES `bond` (`name`);
+  ADD CONSTRAINT `audit_id_bond_hist` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`);
 
 --
 -- Constraints for table `fxr`
@@ -452,16 +304,10 @@ ALTER TABLE `schedule`
   ADD CONSTRAINT `bond_name_schedule` FOREIGN KEY (`bond_name`) REFERENCES `bond` (`name`);
 
 --
--- Constraints for table `user`
---
-ALTER TABLE `user`
-  ADD CONSTRAINT `audit_id_user` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`);
-
---
 -- Constraints for table `user_hist`
 --
 ALTER TABLE `user_hist`
-  ADD CONSTRAINT `username` FOREIGN KEY (`username`) REFERENCES `user` (`username`);
+  ADD CONSTRAINT `username_hist` FOREIGN KEY (`username`) REFERENCES `user` (`username`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

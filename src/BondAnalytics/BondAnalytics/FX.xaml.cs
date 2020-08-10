@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+
 namespace BondAnalytics
 {
     /// <summary>
@@ -20,11 +21,18 @@ namespace BondAnalytics
     /// </summary>
     public partial class FX : Window
     {
+        private string _user;
+
         public FX()
         {
             InitializeComponent();
         }
 
+        public FX(string User)
+        {
+            InitializeComponent();
+            this._user = User;
+        }
 
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
@@ -40,45 +48,28 @@ namespace BondAnalytics
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            int index = int.Parse(((Button)e.Source).Uid);
-
-            //GridCursor.Margin = new Thickness(5 + (150 * index), 0, 0, 0);
+            int index = int.Parse(((Button)e.Source).Uid);            
 
             switch (index)
             {
-
-
                 case 0:
-                    Bond b = new Bond();
+                    Bond b = new Bond(_user);
                     this.Hide();
                     b.Show();
                     break;
-
-
                 case 1:
-                    FX fx = new FX();
+                    FX fx = new FX(_user);
                     this.Hide();
                     fx.Show();
                     break;
 
                 case 2:
-                    Interest_rate f = new Interest_rate();
+                    Interest_rate f = new Interest_rate(_user);
                     this.Hide();
                     f.Show();
                     break;
-
-                case 3:
-                    Exchange e1 = new Exchange();
-                    this.Hide();
-                    e1.Show();
-                    break;
-
             }
-
-
-
         }
-
         private void Home_Click(object sender, RoutedEventArgs e)
         {
             Real_main_window r1 = new Real_main_window();
@@ -86,5 +77,15 @@ namespace BondAnalytics
             r1.Show();
         }
 
+        /// <summary>
+        ///     This way the Window is draggable
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
     }
 }

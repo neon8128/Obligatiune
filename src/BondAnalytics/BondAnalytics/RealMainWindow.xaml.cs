@@ -20,6 +20,7 @@ namespace BondAnalytics
     {
         private String _user;
         private String _acquired_pass;
+        private string user;
 
         public Real_main_window()
         {
@@ -27,12 +28,14 @@ namespace BondAnalytics
 
         }
 
-        public Real_main_window(String User, String Acquired_pass)
+        public Real_main_window(String User)
         {
             InitializeComponent();
             this._user = User;
-            this._acquired_pass =Acquired_pass;//parola baza de date
+            
         }
+
+        
 
 
         /// <summary>
@@ -72,27 +75,22 @@ namespace BondAnalytics
             switch (index) //changing pages based on index
             {
                 case 0:
-                    Bond b = new Bond(_user, _acquired_pass);
+                    Bond b = new Bond(_user);
                     this.Hide();
                     b.Show();
                     break;
                 case 1:
-                    FX fx = new FX();
+                    FX fx = new FX(_user);
                     this.Hide();
                     fx.Show();
                     break;
 
                 case 2:
-                    Interest_rate f = new Interest_rate();
+                    Interest_rate f = new Interest_rate(_user);
                     this.Hide();
                     f.Show();
                     break;
 
-                case 3:
-                    Exchange e1 = new Exchange();
-                    this.Hide();
-                    e1.Show();
-                    break;
             }
 
 
@@ -105,7 +103,7 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void Home_Click(object sender, RoutedEventArgs e)
         {
-            Real_main_window r1 = new Real_main_window();
+            Real_main_window r1 = new Real_main_window(_user);
             this.Close();
             r1.Show();
         }

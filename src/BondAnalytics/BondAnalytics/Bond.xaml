@@ -66,10 +66,10 @@
         </Style>
 
 
-        <Style TargetType="{x:Type Label}">
+        <!-- <Style TargetType="{x:Type Label}">
             <Setter Property="Margin" Value="5,0,5,0" />
             <Setter Property="HorizontalAlignment" Value="Left" />
-        </Style>
+        </Style> -->
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Margin" Value="0,2,40,2" />
@@ -90,7 +90,8 @@
             </Setter>
         </Style>
 
-
+        <local:Validation x:Key="DataContext"/>
+        <Thickness x:Key="Thickness1">1</Thickness>
 
     </Window.Resources>
 
@@ -107,7 +108,7 @@
                     <ImageBrush ImageSource="Assets1/equalizer.png"/>
                 </Button.Background>
             </Button>
-            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtnClick" Margin="775,2,0,12" RenderTransformOrigin="0.596,0.646">
+            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtnClick" Margin="775,2,0,12" RenderTransformOrigin="0.596,0.646" IsCancel="True">
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/close_default.png" Stretch="Uniform"/>
                 </Button.Background>
@@ -136,9 +137,9 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="10 0" >
 
                     <Button  Uid="0" Width="150" Content="BOND" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="ButtonClick"/>
-                    <Button  Uid="1" Width="150" Content="FX" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="ButtonClick"/>
+                    <Button  Uid="1" Width="150" Content="FXR" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="ButtonClick"/>
                     <Button  Uid="2" Width="150" Content="INTEREST RATE" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="ButtonClick"/>
-                    <Button  Uid="3" Width="150" Content="EXCHANGE" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="ButtonClick"/>
+
 
                 </StackPanel>
 
@@ -146,7 +147,8 @@
             </StackPanel>
 
         </Grid>
-        <Grid x:Name="GridMain" Height="855" Background="White"  Margin="0,0,-146,0">
+        <Grid x:Name="GridMain" Height="855" Background="White"  Margin="0,0,-146,0" DataContext="{StaticResource DataContext}">
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="30*"/>
                 <RowDefinition Height="30*"/>
@@ -177,23 +179,24 @@
             </StackPanel>
 
 
-            <TextBox x:Name="Name" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=_name,
-                        ValidatesOnDataErrors=true, NotifyOnValidationError=true}"
+            <TextBox x:Name="Name" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=Name,
+                        ValidatesOnDataErrors=true,   NotifyOnValidationError=true}" 
                      HorizontalAlignment="Left" Height="23" Margin="100,4,0,0" TextWrapping="Wrap" Background="White" Foreground="Black" VerticalAlignment="Top" Width="170" SelectionBrush="Black" BorderBrush="Black"/>
-            <TextBox x:Name="InterestRate" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=_interestRate,
+            <TextBox x:Name="InterestRate" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=InterestRate,
                         ValidatesOnDataErrors=true, NotifyOnValidationError=true}"
                      HorizontalAlignment="Left" Height="23" Margin="100,32,0,0" TextWrapping="Wrap" Background="White" Foreground="Black" VerticalAlignment="Top" Width="170" SelectionBrush="Black" BorderBrush="Black"/>
             <TextBox x:Name="Ccy" 
-                     Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=_ccy,
+                     Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=Ccy,
                         ValidatesOnDataErrors=true, NotifyOnValidationError=true}"
                      HorizontalAlignment="Left" Height="23" Margin="100,61,0,0" TextWrapping="Wrap" Background="White" Foreground="Black" VerticalAlignment="Top" Width="170" SelectionBrush="Black" BorderBrush="Black"/>
             <TextBox x:Name="Principal" 
-                     Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=_principal,
+                     Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=Principal,
                         ValidatesOnDataErrors=true, NotifyOnValidationError=true}"
                      HorizontalAlignment="Left" Height="23" Margin="100,95,0,0" TextWrapping="Wrap" Background="White" Foreground="Black" VerticalAlignment="Top" Width="170" SelectionBrush="Black" BorderBrush="Black"/>
 
 
-            <DatePicker x:Name="EndPick" HorizontalAlignment="Left" Margin="100,68,0,0" Grid.Row="1" VerticalAlignment="Top" Foreground="White" Style="{StaticResource DatePickerStyle }" Height="31" Width="239"  >
+            <DatePicker x:Name="EndPick" HorizontalAlignment="Left" Margin="100,68,0,0" Grid.Row="1" VerticalAlignment="Top" Foreground="Black" Style="{StaticResource DatePickerStyle }" Height="31" Width="239" Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=EndDate,
+                        ValidatesOnDataErrors=true, NotifyOnValidationError=true}" >
                 <DatePicker.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="White" Offset="0"/>
@@ -203,7 +206,9 @@
 
             </DatePicker>
 
-            <DatePicker x:Name="StartPick" HorizontalAlignment="Left" Margin="100,27,0,0" Grid.Row="1" VerticalAlignment="Top"  Foreground="White" Style="{StaticResource DatePickerStyle }" Height="31" Width="239" RenderTransformOrigin="0.5,0.5" >
+            <DatePicker x:Name="StartPick" HorizontalAlignment="Left" Margin="100,27,0,0" Grid.Row="1" VerticalAlignment="Top"  Foreground="Black" Style="{StaticResource DatePickerStyle }" Height="31" Width="239" RenderTransformOrigin="0.5,0.5"
+                        Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=StartDate,
+                        ValidatesOnDataErrors=true, NotifyOnValidationError=true}">
 
                 <DatePicker.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -212,12 +217,36 @@
                     </LinearGradientBrush>
                 </DatePicker.Background>
             </DatePicker>
-            <Button x:Name="Save" Content="Save" HorizontalAlignment="Left" Margin="85,25.2,0,0" Grid.Row="2" VerticalAlignment="Top" Width="150" BorderBrush="#FFF7F2F2" Background="#FFEAEAEA" Click="SaveClick"/>
-            <ComboBox x:Name="DayCountingConvention" HorizontalAlignment="Left" Margin="231,121,0,0" VerticalAlignment="Top" Width="120" Background="White" BorderBrush="Black" Grid.RowSpan="2" >
+            <Button x:Name="Save" Content="Save" HorizontalAlignment="Left" Margin="25,22.2,0,0" Grid.Row="2" VerticalAlignment="Top" Width="162" BorderBrush="#FFF7F2F2" Click="SaveClick" Height="34" Cursor="Hand" BorderThickness="{DynamicResource Thickness1}" Foreground="#FF151414" Background="White" FontSize="14" FontWeight="{DynamicResource {x:Static SystemFonts.StatusFontWeightKey}}" >
+
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}">
+                        <Setter Property="IsEnabled" Value="false" />
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding ElementName=Name, Path=(Validation.HasError)}" Value="false" />
+                                    <Condition Binding="{Binding ElementName=Ccy, Path=(Validation.HasError)}" Value="false" />
+                                    <Condition Binding="{Binding ElementName=Principal, Path=(Validation.HasError)}" Value="false" />
+                                    <Condition Binding="{Binding ElementName=InterestRate, Path=(Validation.HasError)}" Value="false" />
+                                    <Condition Binding="{Binding ElementName=DayCountingConvention, Path=(Validation.HasError)}" Value="false" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="IsEnabled" Value="true" />
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+            <ComboBox x:Name="DayCountingConvention" HorizontalAlignment="Left" Margin="231,121,0,0" VerticalAlignment="Top" Width="120" Background="White" BorderBrush="Black" Grid.RowSpan="2" 
+                      Text="{Binding UpdateSourceTrigger=PropertyChanged, Path=DayCountingConvention,
+                        ValidatesOnDataErrors=true, NotifyOnValidationError=true}">
                 <ComboBoxItem Content="ACT/ACT" HorizontalAlignment="Left" Width="118.4" Foreground="Black"/>
                 <ComboBoxItem Content="ACT/365" HorizontalAlignment="Left" Width="118.4"  Foreground="Black"/>
             </ComboBox>
             <StackPanel Grid.Column="1" HorizontalAlignment="Left" Height="100" Margin="61,102,0,0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top" Width="100"/>
+            <Button x:Name="Load" Content="Load" HorizontalAlignment="Left" Margin="226,22.2,0,0" Grid.Row="2" VerticalAlignment="Top" Width="150" BorderBrush="#FFF7F2F2" Background="#FFEAEAEA" Click="Load_Click">
+
+            </Button>
 
         </Grid>
 

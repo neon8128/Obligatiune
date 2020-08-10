@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -17,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+
 namespace BondAnalytics
 {
     /// <summary>
@@ -25,9 +27,9 @@ namespace BondAnalytics
     public partial class After_login : Window
     {
         Int32 _attempts = 0;
-       private String _user;
+        private String _user;
         private String _acquiredPass;
-        
+        MySqlConnection _db= DataBase.Connection;
 
         public After_login()
         {
@@ -35,11 +37,10 @@ namespace BondAnalytics
             
         }
 
-        public After_login(String User, String AcquiredPass)
+        public After_login(String User)
         {
             InitializeComponent();
-            this._user = User;
-            this._acquiredPass = AcquiredPass;
+            this._user = User;                     
         }
 
         /// <summary>
@@ -72,57 +73,53 @@ namespace BondAnalytics
         /// <param name="Pass"></param>
         /// <returns></returns>
         public bool Verify(string User, string Pass)
-        {         
-             String connection = ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
-            
-            using (var conn = new MySqlConnection(connection))
-            {
+        {
+            //String connection = ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
+
+           // using (var conn = new MySqlConnection(connection))
+          //  {
                 try
-                {
-                    conn.Open();    // open the connection
-                                    // question: what happens if Open() fails / throws exception???
-                    var sqlQuery = $"SELECT password FROM bond.user where username='{User}'";
-                    String testPass = null;
-                    using (var cmd = new MySqlCommand(sqlQuery, conn))
+                {   
+                   var sqlQuery = $"SELECT password FROM bond_new.user where username='{User}'";
+                   String testPass = null;
+                   using (var cmd = new MySqlCommand(sqlQuery, _db))
                     {
-                        testPass = cmd.ExecuteScalar() as String;
+                     testPass = cmd.ExecuteScalar() as String;
                     }
                     //conn.Close();   // close the connection????
                     // if the password stored in database is equal to the one the user entered return true; false otherwise
-                    if (testPass == Pass)
+                   if (testPass == Pass)
                     {
                         return true;
                     }
-                    else
+                   else
                     {
                         return false;
                     }
-
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    MessageBox.Show(e.Message);
+                    MessageBox.Show(e.Message+"at afterlogin Verify");
                     return false;
-                }             
-            }
+                }
+            //}
         }
-        
-     
+
+
         /// <summary>
         ///     if the conditions are met the MainWindow will appear; otherwise there will be 2 more chances to connect 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            
+        {          
             String newPass = ComputeSha256Hash(password.Password); //convert the pass to hash256
-            if (Verify(_user, newPass)) 
+            if (Verify(_user, newPass))
             {
                 MessageBox.Show("You have successfully logged in as " + _user);
-                Insert_audit();
+                InsertAudit();
                 this.Close();
-                var r1 = new Real_main_window(_user, _acquiredPass);
+                var r1 = new Real_main_window(_user);
                 r1.Show();
             }
             else
@@ -133,39 +130,30 @@ namespace BondAnalytics
             if (_attempts == 3)
             {
                 MessageBox.Show("Bye");
-                Application.Current.Shutdown();
-            }
+                Application.Current.Shutdown();                
+            }           
         }
 
 
         /// <summary>
         ///     A row will be inserted in the audit table in order to track user activity
         /// </summary>
-        public void Insert_audit()
+        public void InsertAudit()
         {
             String ip = GetLocalIPAddress();
             String pc = System.Environment.MachineName;
             var time = DateTime.Now;
-
-            
-            String connection = ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
-            using (var conn = new MySqlConnection(connection))
-            {
-                conn.Open(); //opne connection
-
-                using (var cmd = new MySqlCommand("INSERT INTO bond.audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", conn))
+           // String connection = ConfigurationManager.ConnectionStrings["Bond"].ConnectionString;                      
+               using (var cmd = new MySqlCommand("INSERT INTO bond_new.audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", _db))
                 {
                     cmd.Parameters.AddWithValue("@username", _user);
                     cmd.Parameters.AddWithValue("@TS", time);
                     cmd.Parameters.AddWithValue("@details", "user logged in");
                     cmd.Parameters.AddWithValue("@machine", pc);
                     cmd.Parameters.AddWithValue("@ip", ip);
-                    cmd.ExecuteNonQuery();
-                    conn.Close(); //close connection
-                }
-            }
+                    cmd.ExecuteNonQuery();                   
+               }            
         }
-
 
         /// <summary>
         ///     Get ip address
@@ -183,7 +171,12 @@ namespace BondAnalytics
             }
             throw new Exception("No network adapters with an IPv4 address in the system!");
         }
-
+        
+        /// <summary>
+        /// Closing the app
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void CloseBtn_Click(object sender, RoutedEventArgs e)
         {
             Application.Current.Shutdown();
@@ -201,13 +194,12 @@ namespace BondAnalytics
                 this.DragMove();
         }
 
+        private void ForgotPass_Click(object sender, RoutedEventArgs e)
+        {
+            var f = new ForgotPass(_user);
+            f.Show();
+            this.Hide();
 
-        /// <summary>
-        /// Editing the app.config connection String with user credentials
-        /// </summary>
-        /// <param name="User"></param>
-        /// <param name="Pass"></param>
-        
-
+        }
     }
 }

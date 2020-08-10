@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BondAnalytics"
          mc:Ignorable="d"
+        MouseDown="Window_MouseDown"
      Title="FX" Height="600" Width="800"
         WindowStyle="None"
         ResizeMode="NoResize"
@@ -96,10 +97,9 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="10 0" >
 
                     <Button  Uid="0" Width="150" Content="BOND" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
-                    <Button  Uid="1" Width="150" Content="FX" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
+                    <Button  Uid="1" Width="150" Content="FXR" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
                     <Button  Uid="2" Width="150" Content="INTEREST RATE" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
-                    <Button  Uid="3" Width="150" Content="EXCHANGE" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
-
+                    
                 </StackPanel>
 
                 <!--   <Grid x:Name="GridCursor" Width="150" Height="5" Background="White" HorizontalAlignment="Left"  /> -->
