@@ -68,9 +68,7 @@
             <Label Content="Password" Foreground="White"/>
             <PasswordBox x:Name="pass" Background="#545d6a" Foreground="White" FontSize="18"/>
             <Button x:Name="btn" Click="Button_Click"  Content="Submit" Margin="60 10" Background="#545d6a" Foreground="White" FontSize="18" IsDefault="True"/>
-            <ComboBox x:Name="DataBase"  VerticalAlignment="Stretch" Margin="0,0,620,0" Foreground="White">
-                <ComboBoxItem Content="Bond" Foreground="White"/>
-                <ComboBoxItem Content="MyDB1" Foreground="White"/>
+            <ComboBox x:Name="_dataBaseCombo"  VerticalAlignment="Stretch" Margin="0,0,620,0" Foreground="White">
             </ComboBox>
         </StackPanel>
     </Grid>

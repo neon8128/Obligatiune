@@ -38,26 +38,17 @@ namespace BondAnalytics
         public Bond()
         {
             InitializeComponent();
-            _db = DataBase.Connection;
-            
-
+            _db = StaticDataManager.GetStaticDataManager().DBConnection;
         }
 
-        public Bond(String User)
+        public Bond(String User) : this()
         {
-            InitializeComponent();
             this._user = User;
-            _db = DataBase.Connection;
-           
-
         }
 
-        public Bond(BondItems B, String User)
+        public Bond(BondItems B, String User) : this(User)
         {
-            InitializeComponent();
-            this._user = User;
             this._b = B;
-            _db = DataBase.Connection;
             Name.Text = B.Name;
             InterestRate.Text = B.InterestRate.ToString();
             Ccy.Text = B.Ccy;
@@ -65,7 +56,6 @@ namespace BondAnalytics
             StartPick.Text = B.StartDate.ToString();
             EndPick.Text = B.EndDate.ToString();
             DayCountingConvention.Text = B.DayCountingConvention.ToString();
-           
         }
 
 
@@ -147,9 +137,37 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void SaveClick(object sender, RoutedEventArgs e)
         {
-            var auditId = InsertAudit();
-            InsertBond(auditId);
-            InsertBondHist(auditId);
+            var dbTransaction = _db.BeginTransaction();
+
+            try
+            {
+
+                var auditId = InsertAudit();
+                
+                InsertBond(auditId);
+
+                // create save point P1
+                /*
+                var x = 0;
+
+                var t = 1 / x;
+                */
+
+                InsertBondHist(auditId);
+
+                
+
+                dbTransaction.Commit();
+            }
+            catch
+            {
+                // rollback()
+                // rollabck to P1
+
+                dbTransaction.Rollback();
+            }
+
+            dbTransaction.Dispose();
 
         }
         /// <summary>
@@ -162,7 +180,7 @@ namespace BondAnalytics
             DateTime time = DateTime.Now;
             UInt64 auditId = 0;
             MySqlCommand cmd = null;
-            using (cmd = new MySqlCommand("INSERT INTO bond_new.audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", _db))
+            using (cmd = new MySqlCommand("INSERT INTO audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", _db))
             {
                 cmd.Parameters.AddWithValue("@username", _user);
                 cmd.Parameters.AddWithValue("@TS", time);
@@ -188,7 +206,7 @@ namespace BondAnalytics
 
             try
             {
-                cmd = new MySqlCommand($"Select version from bond_new.bond where Name='{Name.Text}'", _db);
+                cmd = new MySqlCommand($"Select version from bond where Name='{Name.Text}'", _db);
                 Int32? version = (Int32?)cmd.ExecuteScalar();
                 if (version == null)
                 {
@@ -200,10 +218,10 @@ namespace BondAnalytics
                     version++;
 
                 }
-                cmd = new MySqlCommand($"DELETE FROM bond_new.bond where Name = '{Name.Text}'", _db);
+                cmd = new MySqlCommand($"DELETE FROM bond where Name = '{Name.Text}'", _db);
                 cmd.ExecuteNonQuery();
 
-                using (cmd = new MySqlCommand("INSERT INTO bond_new.bond(username,name, audit_id, interest_rate, ccy, principal,start_date,end_date,day_counting_convention,version) VALUES (@username,@name,@audit_id,@interest_rate,@ccy,@principal,@start_date,@end_date,@day_counting_convention,@version)", _db))
+                using (cmd = new MySqlCommand("INSERT INTO bond(username,name, audit_id, interest_rate, ccy, principal,start_date,end_date,day_counting_convention,version) VALUES (@username,@name,@audit_id,@interest_rate,@ccy,@principal,@start_date,@end_date,@day_counting_convention,@version)", _db))
                 {
                     cmd.Parameters.AddWithValue("@username", _user);
                     cmd.Parameters.AddWithValue("@name", Name.Text);
@@ -241,7 +259,7 @@ namespace BondAnalytics
             try
             {
                 //conn.Open();
-                String query = $"Insert into bond_new.bond_hist(username,name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date) select username,name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date from  bond b1 where b1.audit_id='{AuditId}' ";
+                String query = $"Insert into bond_hist(username,name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date) select username,name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date from  bond b1 where b1.audit_id='{AuditId}' ";
                 cmd = new MySqlCommand(query, _db);
                 var xxx = cmd.ExecuteNonQuery();
                 // conn.Close();
