@@ -53,7 +53,7 @@
 
     <Grid Background="#2e3137">
         <StackPanel Margin="20">
-            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtn_Click"   HorizontalAlignment="Right">
+            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtn_Click"   HorizontalAlignment="Right" IsCancel="True">
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/close_default.png" Stretch="Uniform"/>
                 </Button.Background>
@@ -62,7 +62,9 @@
             <Label Content="Login" Foreground="White" FontSize="25" HorizontalAlignment="Center"/>
             <Label Content="Password" Foreground="White"/>
             <PasswordBox x:Name="password" Background="#545d6a" Foreground="White" FontSize="18"/>
-            <Button x:Name="btn" Click="Button_Click"  Content="Submit" Margin="60 10" Background="#545d6a" Foreground="White" FontSize="18"/>
+            <Button x:Name="btn" Click="Button_Click"  Content="Submit" Margin="60 10" Background="#545d6a" Foreground="White" FontSize="18" IsDefault="True"/>
+
         </StackPanel>
+        <Button x:Name="ForgotPass" Click="ForgotPass_Click"  Content="Forgot Password?" Margin="26,232,640,190.6" Background="#545d6a" Foreground="White"  FontSize="12" Height="Auto" FontWeight="Bold" />
     </Grid>
 </Window>

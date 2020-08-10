@@ -70,7 +70,7 @@
                     <ImageBrush ImageSource="Assets1/equalizer.png"/>
                 </Button.Background>
             </Button>
-            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtn_Click" Margin="775,2,0,12" RenderTransformOrigin="0.596,0.646">
+            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtn_Click" Margin="775,2,0,12" RenderTransformOrigin="0.596,0.646" IsCancel="True">
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/close_default.png" Stretch="Uniform"/>
                 </Button.Background>
@@ -99,9 +99,9 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="10 0" >
 
                     <Button  Uid="0" Width="150" Content="BOND" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
-                    <Button  Uid="1" Width="150" Content="FX" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
+                    <Button  Uid="1" Width="150" Content="FXR" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
                     <Button  Uid="2" Width="150" Content="INTEREST RATE" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
-                    <Button  Uid="3" Width="150" Content="EXCHANGE" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
+                    
 
                 </StackPanel>
 

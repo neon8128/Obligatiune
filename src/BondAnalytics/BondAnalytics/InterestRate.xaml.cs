@@ -19,8 +19,16 @@ namespace BondAnalytics
     /// </summary>
     public partial class Interest_rate : Window
     {
+        private string _user;
+
         public Interest_rate()
         {
+            InitializeComponent();
+        }
+
+        public Interest_rate(string User)
+        {
+            this._user = User;
             InitializeComponent();
         }
 
@@ -45,29 +53,24 @@ namespace BondAnalytics
             switch (index)
             {
                 case 0:
-                    Bond b = new Bond();
+                    Bond b = new Bond(_user);
                     this.Hide();
                     b.Show();
                     break;
 
 
                 case 1:
-                    FX fx = new FX();
+                    FX fx = new FX(_user);
                     this.Hide();
                     fx.Show();
                     break;
 
                 case 2:
-                    Interest_rate f = new Interest_rate();
+                    Interest_rate f = new Interest_rate(_user);
                     this.Hide();
                     f.Show();
                     break;
 
-                case 3:
-                    Exchange e1 = new Exchange();
-                    this.Hide();
-                    e1.Show();
-                    break;
 
             }
 

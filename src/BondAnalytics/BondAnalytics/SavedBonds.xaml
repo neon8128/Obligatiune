@@ -1,13 +1,14 @@
-﻿<Window x:Class="BondAnalytics.Interest_rate"
+﻿<Window x:Class="BondAnalytics.SavedBonds"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BondAnalytics"
         mc:Ignorable="d"
-        Title="FX" Height="600" Width="800"
-        WindowStyle="None"
-        ResizeMode="NoResize"
+        Title="SavedBonds" Height="647.2" Width="859.2"
+         WindowStyle="None"
+        ResizeMode="CanResize"
+        MouseDown="Window_MouseDown"
         WindowStartupLocation="CenterScreen"
         AllowsTransparency="True">
     <Window.Resources>
@@ -60,14 +61,14 @@
 
 
 
-            <Button Content="My Account" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" FontSize="15"  VerticalAlignment="Center" RenderTransformOrigin="0.456,0.656" Margin="625,-4,60,12"/>
+            <Button Content="My Account" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White" FontSize="15"  VerticalAlignment="Center" RenderTransformOrigin="0.456,0.656" Margin="648,-5,37.2,13"/>
 
-            <Button x:Name="Settings" Width="30" Height="30" BorderThickness="0" Margin="740,0,30,10" >
+            <Button x:Name="Settings" Width="30" Height="30" BorderThickness="0" Margin="791,-2,38.2,12" >
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/equalizer.png"/>
                 </Button.Background>
             </Button>
-            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtn_Click"  Margin="775,2,0,12" RenderTransformOrigin="0.596,0.646">
+            <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtn_Click" Margin="827,2,7.2,12" RenderTransformOrigin="0.596,0.646">
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/close_default.png" Stretch="Uniform"/>
                 </Button.Background>
@@ -76,12 +77,12 @@
 
 
 
-            <Button x:Name="Home"    Width="25" Height="26"   BorderThickness="0" Margin="30,5,745,9" Click="Home_Click" >
+            <Button x:Name="Home"    Width="25" Height="26"   BorderThickness="0" Margin="30,3,804.2,11" Click="Home_Click" >
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/home.png" Stretch="Uniform"/>
                 </Button.Background>
             </Button>
-            <Button x:Name="LogOut"    Width="25" Height="26"   BorderThickness="0" Margin="0,5,775,9" Click="LogOut_Click" >
+            <Button x:Name="LogOut"    Width="25" Height="26"   BorderThickness="0" Margin="2,3,832.2,11" Click="LogOut_Click" >
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/logout.png" Stretch="Uniform"/>
                 </Button.Background>
@@ -89,7 +90,7 @@
 
 
         </Grid>
-        <Grid x:Name="panel" Height="70" >
+        <Grid x:Name="panel" Height="58" Margin="0,0,3,0" >
 
 
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
@@ -106,16 +107,10 @@
             </StackPanel>
 
         </Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <DataGrid x:Name="DataGrid" Height="524" Width="856"   MouseDoubleClick="DataGrid_MouseDoubleClick" CanUserAddRows="False"
+              CanUserDeleteRows="False" IsReadOnly="True" SelectionChanged="DataGrid_SelectionChanged"/>
 
-        <Grid x:Name="GridMain" Height="855" Background="White"  Margin="0,0,-146.4,0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="100"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-
-            <Button Content="THis is the interest_rate window" Grid.Row="1"></Button>
-
-        </Grid>
+        </ScrollViewer>
     </StackPanel>
 </Window>
