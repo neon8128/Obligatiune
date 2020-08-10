@@ -31,7 +31,20 @@ namespace BondAnalytics
         {
             InitializeComponent();
             SizeToContent = System.Windows.SizeToContent.Manual;
-            
+
+            PopulateDBConnNames();
+        }
+
+        private void PopulateDBConnNames()
+        {
+            foreach( ConnectionStringSettings connString in ConfigurationManager.ConnectionStrings)
+            {
+                if ( connString.ProviderName.Equals("MySql.Data.MySqlClient", StringComparison.OrdinalIgnoreCase) )
+                {
+                    _dataBaseCombo.Items.Add(connString.Name);
+                }
+            }
+            _dataBaseCombo.Text = _dataBaseCombo.Items[0].ToString();
         }
 
         /// <summary>
@@ -53,24 +66,25 @@ namespace BondAnalytics
         /// <returns></returns>
         public bool Connect(string User, string Pass)
         {
-            String DB = DataBase.SelectionBoxItem.ToString();
-            EditConfig(User, Pass);
+            var connName = _dataBaseCombo.SelectionBoxItem.ToString();
+            var connString = GetConfig( connName, User, Pass);
            
             try
             {
-                String connection = ConfigurationManager.ConnectionStrings[DB].ConnectionString;
-                using (var con = new MySqlConnection(connection))
-                {
-                    con.Open();
-                    return true;
-                }
+                var con = new MySqlConnection(connString);
+                con.Open();
+
+                var staticDataMgr = StaticDataManager.GetStaticDataManager();
+                staticDataMgr.DBConnection = con;
+
+                return true;
+                
             }
             catch (Exception e)
             {
-               // MessageBox.Show(e.ToString());
+                MessageBox.Show(e.ToString());
                 return false;
             }
-
         }
 
         /// <summary>
@@ -80,21 +94,21 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            String DB = DataBase.SelectionBoxItem.ToString();            
+            String DB = _dataBaseCombo.SelectionBoxItem.ToString();            
             String acquired_pass = GetCredential(DB, user.Text); //Get user credentials           
             //  Debug.Assert(GetCredential("Bond_calculator") == null);
             if (acquired_pass != null) // if a password is saved in CredentialManager
             {
-               
                 MessageBox.Show("Your password was saved in WCM, let me grab it");
+                
+                Connect(user.Text, pass.Password);
+                
                 MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
                 this.Hide();
                 var afterLogin = new After_login(user.Text); //Go to the Login App page
                 afterLogin.Show();
                 _ok = true;
-
             }
-            
             else if (Connect(user.Text,pass.Password)) // if the password stored in the user table matches the pass from passwordbox go; otherwise retry 
             {
                
@@ -177,28 +191,26 @@ namespace BondAnalytics
 
 
         /// <summary>
-        /// Editing the app.config connection String with user credentials
+        /// Get the configuration string used to connect to the database
         /// </summary>
+        /// <param name="ConnName"></param>
         /// <param name="User"></param>
         /// <param name="Pass"></param>
-        public void EditConfig(String User, String Pass)
+        /// <returns></returns>
+        public String GetConfig(String ConnName, String User, String Pass)
         {
-            String DB = DataBase.SelectionBoxItem.ToString();
-            var config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            var connectionStringsSection = (ConnectionStringsSection)config.GetSection("connectionStrings");
+            var connString = "";
             try
             {
-                connectionStringsSection.ConnectionStrings[DB].ConnectionString = $"server=localhost;user='{User}';port=3306;password='{Pass}'";
-                config.Save();
-                ConfigurationManager.RefreshSection("connectionString");
+                connString = ConfigurationManager.ConnectionStrings[ConnName].ConnectionString;
+                connString += $"user='{User}';password='{Pass}'";
             }
             catch(Exception e)
             {
                 MessageBox.Show("Select a database to connect to");
             }
-           
-           
 
+            return connString;
         }
 
             

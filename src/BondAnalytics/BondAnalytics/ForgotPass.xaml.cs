@@ -24,7 +24,7 @@ namespace BondAnalytics
     public partial class ForgotPass : Window
     {
         private string _user;
-        MySqlConnection _db = DataBase.Connection;
+        MySqlConnection _db = StaticDataManager.GetStaticDataManager().DBConnection;
         Int16 _attempts = 0;
 
         public ForgotPass()
@@ -112,7 +112,7 @@ namespace BondAnalytics
             {
                 try
                 {
-                    cmd = new MySqlCommand($"Select version from bond_new.user where username='{_user}'", _db);
+                    cmd = new MySqlCommand($"Select version from user where username='{_user}'", _db);
                     int version = (int)cmd.ExecuteScalar();                   
                     version++;          
                     
@@ -154,7 +154,7 @@ namespace BondAnalytics
             DateTime time = DateTime.Now;
             try
             {
-                using ( var cmd = new MySqlCommand("INSERT INTO bond_new.audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", _db))
+                using ( var cmd = new MySqlCommand("INSERT INTO audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", _db))
                 {
                     cmd.Parameters.AddWithValue("@username", _user);
                     cmd.Parameters.AddWithValue("@TS", time);

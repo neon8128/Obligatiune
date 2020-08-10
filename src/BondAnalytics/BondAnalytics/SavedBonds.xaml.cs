@@ -27,14 +27,11 @@ namespace BondAnalytics
         public SavedBonds()
         {
             InitializeComponent();
-            _db = DataBase.Connection;
-            LoadList();
+            _db = StaticDataManager.GetStaticDataManager().DBConnection;
         }
 
-        public SavedBonds(string user)
+        public SavedBonds(string user) : this()
         {
-            InitializeComponent();
-            _db = DataBase.Connection;
             this._user = user;
             LoadList();
         }

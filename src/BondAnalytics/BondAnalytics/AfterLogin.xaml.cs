@@ -29,17 +29,16 @@ namespace BondAnalytics
         Int32 _attempts = 0;
         private String _user;
         private String _acquiredPass;
-        MySqlConnection _db= DataBase.Connection;
+        MySqlConnection _db;
 
         public After_login()
         {
             InitializeComponent();
-            
+            _db = StaticDataManager.GetStaticDataManager().DBConnection;
         }
 
-        public After_login(String User)
+        public After_login(String User) : this()
         {
-            InitializeComponent();
             this._user = User;                     
         }
 
@@ -74,19 +73,14 @@ namespace BondAnalytics
         /// <returns></returns>
         public bool Verify(string User, string Pass)
         {
-            //String connection = ConfigurationManager.ConnectionStrings["MyDB"].ConnectionString;
-
-           // using (var conn = new MySqlConnection(connection))
-          //  {
                 try
                 {   
-                   var sqlQuery = $"SELECT password FROM bond_new.user where username='{User}'";
+                   var sqlQuery = $"SELECT password FROM user where username='{User}'";
                    String testPass = null;
                    using (var cmd = new MySqlCommand(sqlQuery, _db))
                     {
                      testPass = cmd.ExecuteScalar() as String;
                     }
-                    //conn.Close();   // close the connection????
                     // if the password stored in database is equal to the one the user entered return true; false otherwise
                    if (testPass == Pass)
                     {
@@ -144,7 +138,7 @@ namespace BondAnalytics
             String pc = System.Environment.MachineName;
             var time = DateTime.Now;
            // String connection = ConfigurationManager.ConnectionStrings["Bond"].ConnectionString;                      
-               using (var cmd = new MySqlCommand("INSERT INTO bond_new.audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", _db))
+               using (var cmd = new MySqlCommand("INSERT INTO audit(username, TS, details, machine_name, ip) VALUES (@username,@TS,@details,@machine,@ip)", _db))
                 {
                     cmd.Parameters.AddWithValue("@username", _user);
                     cmd.Parameters.AddWithValue("@TS", time);
