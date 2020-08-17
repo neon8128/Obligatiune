@@ -121,7 +121,7 @@ namespace BondAnalytics
         public void LoadList()
         {
             MySqlCommand cmd = null;
-            var query = $"Select username,name,ccy,interest_rate,principal,start_date,end_date,version,day_counting_convention from bond where username='{_user}'";
+            var query = $"Select name,ccy,interest_rate,principal,start_date,end_date,version,day_counting_convention from bond ";
             cmd = new MySqlCommand(query, _db);
             var reader = cmd.ExecuteReader();
             while(reader.Read())
@@ -130,22 +130,22 @@ namespace BondAnalytics
                 {
                     _bondItems.Add(new BondItems
                     {
-                        Username = reader.GetString(0),
-                        Name = reader.GetString(1),
-                        Ccy = reader.GetString(2),
-                        InterestRate = reader.GetDouble(3),
-                        Principal = reader.GetInt32(4),
-                        StartDate = reader.GetString(5),
-                        EndDate = reader.GetString(6),
-                        Version = reader.GetInt32(7),
-                        DayCountingConvention = reader.GetString(8)
+                        
+                        Name = reader.GetString(0),
+                        Ccy = reader.GetString(1),
+                        InterestRate = reader.GetDouble(2),
+                        Principal = reader.GetInt32(3),
+                        StartDate = reader.GetString(4),
+                        EndDate = reader.GetString(5),
+                        Version = reader.GetInt32(6),
+                        DayCountingConvention = reader.GetString(7)
                     });
                    
                    DataGrid.ItemsSource = _bondItems;
                 }
                 catch(Exception e)
                 {
-                    MessageBox.Show(e.Message + " at LoadList");
+                    MessageBox.Show(e.ToString());
                 }
                 
             }
@@ -177,7 +177,6 @@ namespace BondAnalytics
 
     public class BondItems
     {   
-        public String Username { get; set; }
 
         public String Name { get; set; }
 

@@ -1,5 +1,7 @@
-﻿using MySql.Data.MySqlClient;
+﻿using GalaSoft.MvvmLight.Messaging;
+using MySql.Data.MySqlClient;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -32,8 +34,8 @@ namespace BondAnalytics
         private String _acquired_pass;
         MySqlConnection _db;
         private BondItems _b;
-        Validation _v= new Validation();
-        private int _noOfErrorsOnScreen = 0;
+        public List<Schedule> _schedule = new List<Schedule>();
+      
 
         public Bond()
         {
@@ -44,6 +46,7 @@ namespace BondAnalytics
         public Bond(String User) : this()
         {
             this._user = User;
+            
         }
 
         public Bond(BondItems B, String User) : this(User)
@@ -56,6 +59,8 @@ namespace BondAnalytics
             StartPick.Text = B.StartDate.ToString();
             EndPick.Text = B.EndDate.ToString();
             DayCountingConvention.Text = B.DayCountingConvention.ToString();
+            Version.Text = B.Version.ToString(); 
+            LoadList();
         }
 
 
@@ -141,33 +146,24 @@ namespace BondAnalytics
 
             try
             {
-
-                var auditId = InsertAudit();
-                
+                var auditId = InsertAudit();              
                 InsertBond(auditId);
-
-                // create save point P1
-                /*
-                var x = 0;
-
-                var t = 1 / x;
-                */
-
                 InsertBondHist(auditId);
-
-                
-
+                InsertSchedule();
+                InsertScheduleHist();
                 dbTransaction.Commit();
+                MessageBox.Show("The operation was succesful!");
             }
-            catch
+            catch(Exception f)
             {
                 // rollback()
                 // rollabck to P1
 
                 dbTransaction.Rollback();
+                MessageBox.Show(f.ToString());
             }
 
-            dbTransaction.Dispose();
+            dbTransaction.Dispose();           
 
         }
         /// <summary>
@@ -221,9 +217,8 @@ namespace BondAnalytics
                 cmd = new MySqlCommand($"DELETE FROM bond where Name = '{Name.Text}'", _db);
                 cmd.ExecuteNonQuery();
 
-                using (cmd = new MySqlCommand("INSERT INTO bond(username,name, audit_id, interest_rate, ccy, principal,start_date,end_date,day_counting_convention,version) VALUES (@username,@name,@audit_id,@interest_rate,@ccy,@principal,@start_date,@end_date,@day_counting_convention,@version)", _db))
+                using (cmd = new MySqlCommand("INSERT INTO bond(name, audit_id, interest_rate, ccy, principal,start_date,end_date,day_counting_convention,version) VALUES (@name,@audit_id,@interest_rate,@ccy,@principal,@start_date,@end_date,@day_counting_convention,@version)", _db))
                 {
-                    cmd.Parameters.AddWithValue("@username", _user);
                     cmd.Parameters.AddWithValue("@name", Name.Text);
                     cmd.Parameters.AddWithValue("@audit_id", AuditId);
                     cmd.Parameters.AddWithValue("@interest_rate", Double.Parse(InterestRate.Text));
@@ -234,9 +229,8 @@ namespace BondAnalytics
                     cmd.Parameters.AddWithValue("@end_date", EndPick.DisplayDate);
                     cmd.Parameters.AddWithValue("@version", version);
                     cmd.ExecuteNonQuery();
-
-                    MessageBox.Show("The operation was successful");
                 }
+                Version.Text = version.ToString();
 
             }
             catch (Exception e)
@@ -253,23 +247,64 @@ namespace BondAnalytics
         /// <param name="AuditId"></param>
         public void InsertBondHist(UInt64 AuditId)
         {
-
             MySqlCommand cmd = null;
-            //using (var conn = new MySqlConnection(connection))
             try
             {
-                //conn.Open();
-                String query = $"Insert into bond_hist(username,name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date) select username,name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date from  bond b1 where b1.audit_id='{AuditId}' ";
+                String query = $"Insert into bond_hist(name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date) select name,audit_id,version,interest_rate,ccy,principal,day_counting_convention,start_date,end_date from  bond b1 where b1.audit_id='{AuditId}' ";
                 cmd = new MySqlCommand(query, _db);
                 var xxx = cmd.ExecuteNonQuery();
-                // conn.Close();
                 cmd.Dispose();
-                MessageBox.Show("Inserted in bond hist");
 
             }
             catch (Exception e)
             {
                 MessageBox.Show(e.Message + "at InsertBondHist");
+            }
+        }
+
+        /// <summary>
+        /// Insert in the schedule table
+        /// </summary>
+        public void InsertSchedule()
+        {
+            Schedule item = Data.SelectedItem as Schedule;
+            DateTime start, end;
+            String NoDays = (EndPick.SelectedDate - StartPick.SelectedDate).ToString();
+            MySqlCommand cmd = null;
+            try
+            {
+                var q = $"Select version from bond where name = '{item.Name}'";
+                cmd = new MySqlCommand(q, _db);
+                Int32 version = (Int32)cmd.ExecuteScalar();
+                cmd = new MySqlCommand("Insert into schedule (bond_name,ref_day,date_coupon,bond_version,no_days,principal) values (@bond_name,@ref_day,@date_coupon,@bond_version,@no_days,@principal)", _db);
+                cmd.Parameters.AddWithValue("@bond_name", item.Name);
+                cmd.Parameters.AddWithValue("@ref_day", item.RefDay);
+                cmd.Parameters.AddWithValue("@date_coupon", item.DateCoupon);
+                cmd.Parameters.AddWithValue("@bond_version",version );
+                cmd.Parameters.AddWithValue("@no_days", NoDays);
+                cmd.Parameters.AddWithValue("@principal", Principal.Text);
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+                MessageBox.Show("Please select a row");
+            }
+        }
+
+        public void InsertScheduleHist()
+        {
+            MySqlCommand cmd = null;
+            try
+            {
+                cmd = new MySqlCommand("Insert into schedule_hist (bond_name,ref_day,date_coupon,bond_version,no_days,principal) select bond_name,ref_day,date_coupon,bond_version,no_days,principal from schedule", _db);
+               var c= cmd.ExecuteNonQuery();
+                cmd.Dispose();
+
+            }catch(Exception e)
+            {
+                MessageBox.Show(e.ToString());
             }
         }
 
@@ -315,7 +350,68 @@ namespace BondAnalytics
             this.Close();
         }
 
-       
+       /// <summary>
+       /// Loading data from schedule table
+       /// </summary>
+        public void LoadList()
+        {
+            MySqlCommand cmd = null;
+            var query = $"Select bond_name,ref_day,date_coupon,bond_version,no_days from schedule where bond_name='{Name.Text}'";
+            cmd = new MySqlCommand(query, _db);
+            var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                try
+                {
+                    _schedule.Add(new Schedule
+                    {
+                        Name = reader.GetString(0),
+                        RefDay=reader.GetDateTime(1),
+                        DateCoupon=reader.GetDateTime(2),
+                        BondVersion=reader.GetInt32(3),
+                        NoDays=reader.GetInt32(4)
+                    });
 
+                    Data.ItemsSource = _schedule;
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show(e.ToString());
+                }
+
+            }
+            reader.Dispose();
+            cmd.Dispose();
+
+        }
+
+        private void Name_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            int count = _schedule.Count;
+            if (count == 0)
+            {
+                _schedule.Add(new Schedule { Name = Name.Text });
+                Data.ItemsSource = _schedule;
+            }
+            else
+            {
+                return;
+            }
+            
+        }
+    }
+
+    public class Schedule
+    {
+        public String Name { get; set; }
+
+        public DateTime RefDay { get; set; }
+
+        public DateTime DateCoupon { get; set; }
+
+        public Int32 BondVersion { get; set; }
+
+        public Int32 NoDays { get; set; }
+       
     }
 }
