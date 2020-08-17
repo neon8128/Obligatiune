@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 10, 2020 at 04:27 PM
+-- Generation Time: Aug 17, 2020 at 04:26 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.8
 
@@ -46,7 +46,6 @@ CREATE TABLE `bond` (
   `name` varchar(40) NOT NULL,
   `version` int(11) NOT NULL DEFAULT 1,
   `audit_id` int(11) DEFAULT NULL,
-  `username` varchar(35) DEFAULT NULL,
   `interest_rate` double DEFAULT NULL,
   `ccy` varchar(45) DEFAULT NULL,
   `principal` int(11) DEFAULT NULL,
@@ -63,7 +62,6 @@ CREATE TABLE `bond` (
 
 CREATE TABLE `bond_hist` (
   `audit_id` int(11) DEFAULT NULL,
-  `username` varchar(45) DEFAULT NULL,
   `name` varchar(40) NOT NULL,
   `version` int(11) NOT NULL DEFAULT 1,
   `interest_rate` double DEFAULT NULL,
@@ -149,8 +147,25 @@ CREATE TABLE `interest_rate_hist` (
 CREATE TABLE `schedule` (
   `bond_name` varchar(11) NOT NULL,
   `ref_day` date NOT NULL,
-  `coupon_day` date NOT NULL,
-  `audit_id` int(11) NOT NULL
+  `date_coupon` date NOT NULL,
+  `bond_version` int(11) NOT NULL,
+  `no_days` int(11) NOT NULL,
+  `principal` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `schedule_hist`
+--
+
+CREATE TABLE `schedule_hist` (
+  `bond_name` varchar(11) NOT NULL,
+  `ref_day` date NOT NULL,
+  `date_coupon` date NOT NULL,
+  `bond_version` int(11) NOT NULL,
+  `no_days` int(11) NOT NULL,
+  `principal` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -191,8 +206,7 @@ CREATE TABLE `user_hist` (
 -- Indexes for table `audit`
 --
 ALTER TABLE `audit`
-  ADD PRIMARY KEY (`audit_id`),
-  ADD KEY `username` (`username`);
+  ADD PRIMARY KEY (`audit_id`);
 
 --
 -- Indexes for table `bond`
@@ -200,12 +214,6 @@ ALTER TABLE `audit`
 ALTER TABLE `bond`
   ADD PRIMARY KEY (`name`),
   ADD KEY `audit_id` (`audit_id`) USING BTREE;
-
---
--- Indexes for table `bond_hist`
---
-ALTER TABLE `bond_hist`
-  ADD KEY `audit_id_bond_hist` (`audit_id`);
 
 --
 -- Indexes for table `fxr`
@@ -231,8 +239,7 @@ ALTER TABLE `interest_rate_hist`
 -- Indexes for table `schedule`
 --
 ALTER TABLE `schedule`
-  ADD KEY `bond_name_schedule` (`bond_name`),
-  ADD KEY `audit_id` (`audit_id`);
+  ADD KEY `bond_name_schedule` (`bond_name`);
 
 --
 -- Indexes for table `user`
@@ -261,47 +268,22 @@ ALTER TABLE `audit`
 --
 
 --
--- Constraints for table `audit`
---
-ALTER TABLE `audit`
-  ADD CONSTRAINT `username` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE SET NULL ON UPDATE SET NULL;
-
---
--- Constraints for table `bond`
---
-ALTER TABLE `bond`
-  ADD CONSTRAINT `audit_bond` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`);
-
---
--- Constraints for table `bond_hist`
---
-ALTER TABLE `bond_hist`
-  ADD CONSTRAINT `audit_id_bond_hist` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`);
-
---
 -- Constraints for table `fxr`
 --
 ALTER TABLE `fxr`
-  ADD CONSTRAINT `audit_fxr` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`);
+  ADD CONSTRAINT `audit_fxr` FOREIGN KEY (`audit_id`) REFERENCES `bond`.`audit` (`audit_id`);
 
 --
 -- Constraints for table `interest_rate`
 --
 ALTER TABLE `interest_rate`
-  ADD CONSTRAINT `audit_interest` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`);
+  ADD CONSTRAINT `audit_interest` FOREIGN KEY (`audit_id`) REFERENCES `bond`.`audit` (`audit_id`);
 
 --
 -- Constraints for table `interest_rate_hist`
 --
 ALTER TABLE `interest_rate_hist`
   ADD CONSTRAINT `interest_con` FOREIGN KEY (`name`,`as_of_date`,`term`,`date`) REFERENCES `interest_rate` (`name`, `as_of_date`, `term`, `date`) ON UPDATE NO ACTION;
-
---
--- Constraints for table `schedule`
---
-ALTER TABLE `schedule`
-  ADD CONSTRAINT `audit_id` FOREIGN KEY (`audit_id`) REFERENCES `audit` (`audit_id`),
-  ADD CONSTRAINT `bond_name_schedule` FOREIGN KEY (`bond_name`) REFERENCES `bond` (`name`);
 
 --
 -- Constraints for table `user_hist`

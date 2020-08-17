@@ -88,6 +88,10 @@ namespace BondAnalytics
                     {
                         result = "Please enter a valid format for date";
                     }
+                   else if(DateTime.Parse(EndDate) < DateTime.Parse(StartDate))
+                    {
+                        result = "EndDate should be greater than StartDate";
+                    }  
 
                 }
 

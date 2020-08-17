@@ -101,7 +101,7 @@ namespace BondAnalytics
             {
                 MessageBox.Show("Your password was saved in WCM, let me grab it");
                 
-                Connect(user.Text, pass.Password);
+                Connect(user.Text, acquired_pass);
                 
                 MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
                 this.Hide();

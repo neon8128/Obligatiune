@@ -32,9 +32,8 @@ namespace BondAnalytics
             InitializeComponent();
         }
 
-        public ForgotPass(string User)
-        {
-            InitializeComponent();
+        public ForgotPass(string User):this()
+        {           
             this._user = User;
             
         }
@@ -90,20 +89,35 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void btn_Click(object sender, RoutedEventArgs e)
         {
-           if( InsertUser())
+            var dbTransaction = _db.BeginTransaction();
+            try
             {
+                InsertUser();
+                var x = 0;
+
+                var t = 1 / x;
                 InsertAudit();
                 InsertUserHist();
+                dbTransaction.Commit();
+                MessageBox.Show("Password has been changed");
                 var a = new After_login(_user);
                 a.Show();
                 this.Hide();
-            }            
+            }
+            catch
+            {
+                dbTransaction.Rollback();
+                MessageBox.Show("An error has occured");
+            }
+            dbTransaction.Dispose();
+            
+
         }
 
         /// <summary>
         /// Insert in the user table 
         /// </summary>
-        public bool InsertUser()
+        public void InsertUser()
         {
             MySqlCommand cmd = null;
             String passtxt = pass.Password; // storing in a string the password from the passbox
@@ -121,8 +135,7 @@ namespace BondAnalytics
                     cmd = new MySqlCommand(query, _db);
                     cmd.ExecuteNonQuery();
                     cmd.Dispose();
-                    MessageBox.Show("Password has been changed");
-                    return true;
+                    
                 }
                 catch(Exception e)
                 {
@@ -133,15 +146,15 @@ namespace BondAnalytics
             {
                 _attempts++;
                 MessageBox.Show("Try again!" + "\n" + "You have tried " + _attempts + " out of 3");
-                return false;
+                
             }
             if (_attempts == 3)
             {
                 MessageBox.Show("Bye");
                 Application.Current.Shutdown();
-                return false;
+                
             }
-            return false;
+            
         }
 
         /// <summary>
