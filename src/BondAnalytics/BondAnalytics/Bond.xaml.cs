@@ -35,7 +35,9 @@ namespace BondAnalytics
         MySqlConnection _db;
         private BondItems _b;
         public List<Schedule> _schedule = new List<Schedule>();
-      
+
+        public DataTable _dt = new DataTable();
+
 
         public Bond()
         {
@@ -142,6 +144,9 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void SaveClick(object sender, RoutedEventArgs e)
         {
+            _dt.Rows[0]["no_days"] = 12;
+            return;
+
             var dbTransaction = _db.BeginTransaction();
 
             try
@@ -152,6 +157,7 @@ namespace BondAnalytics
                 InsertSchedule();
                 InsertScheduleHist();
                 dbTransaction.Commit();
+
                 MessageBox.Show("The operation was succesful!");
             }
             catch(Exception f)
@@ -268,44 +274,46 @@ namespace BondAnalytics
         public void InsertSchedule()
         {
             Schedule item = Data.SelectedItem as Schedule;
-            DateTime start, end;
-            String NoDays = (EndPick.SelectedDate - StartPick.SelectedDate).ToString();
-            MySqlCommand cmd = null;
-            try
+
+            var changesDT = _dt.GetChanges();
+
+            /*
+            if (changesDT == null)
             {
-                var q = $"Select version from bond where name = '{item.Name}'";
+                return;
+            }
+            else
+            {
+            */
+                // todo: check values for null when computing noDays
+
+                var noDays = (Int32)(EndPick.SelectedDate.Value - StartPick.SelectedDate.Value).Days;
+                MySqlCommand cmd = null;
+
+                // todo: you need to save all the records, not only one
+
+                var q = $"Select version from bond where name = '{(String)changesDT.Rows[0]["bond_name"]}'";
                 cmd = new MySqlCommand(q, _db);
                 Int32 version = (Int32)cmd.ExecuteScalar();
                 cmd = new MySqlCommand("Insert into schedule (bond_name,ref_day,date_coupon,bond_version,no_days,principal) values (@bond_name,@ref_day,@date_coupon,@bond_version,@no_days,@principal)", _db);
                 cmd.Parameters.AddWithValue("@bond_name", item.Name);
                 cmd.Parameters.AddWithValue("@ref_day", item.RefDay);
                 cmd.Parameters.AddWithValue("@date_coupon", item.DateCoupon);
-                cmd.Parameters.AddWithValue("@bond_version",version );
-                cmd.Parameters.AddWithValue("@no_days", NoDays);
+                cmd.Parameters.AddWithValue("@bond_version", version);
+                cmd.Parameters.AddWithValue("@no_days", noDays);
                 cmd.Parameters.AddWithValue("@principal", Principal.Text);
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.ToString());
-                MessageBox.Show("Please select a row");
-            }
+            /*}*/
         }
 
         public void InsertScheduleHist()
         {
             MySqlCommand cmd = null;
-            try
-            {
-                cmd = new MySqlCommand("Insert into schedule_hist (bond_name,ref_day,date_coupon,bond_version,no_days,principal) select bond_name,ref_day,date_coupon,bond_version,no_days,principal from schedule", _db);
-               var c= cmd.ExecuteNonQuery();
-                cmd.Dispose();
-
-            }catch(Exception e)
-            {
-                MessageBox.Show(e.ToString());
-            }
+            
+            cmd = new MySqlCommand("Insert into schedule_hist (bond_name,ref_day,date_coupon,bond_version,no_days,principal) select bond_name,ref_day,date_coupon,bond_version,no_days,principal from schedule", _db);
+            var c= cmd.ExecuteNonQuery();
+            cmd.Dispose();
         }
 
         /// <summary>
@@ -355,6 +363,7 @@ namespace BondAnalytics
        /// </summary>
         public void LoadList()
         {
+            /*
             MySqlCommand cmd = null;
             var query = $"Select bond_name,ref_day,date_coupon,bond_version,no_days from schedule where bond_name='{Name.Text}'";
             cmd = new MySqlCommand(query, _db);
@@ -371,8 +380,6 @@ namespace BondAnalytics
                         BondVersion=reader.GetInt32(3),
                         NoDays=reader.GetInt32(4)
                     });
-
-                    Data.ItemsSource = _schedule;
                 }
                 catch (Exception e)
                 {
@@ -382,7 +389,22 @@ namespace BondAnalytics
             }
             reader.Dispose();
             cmd.Dispose();
+            */
 
+
+            var query = $"Select bond_name,ref_day,date_coupon,bond_version,no_days from schedule where bond_name='{Name.Text}'";
+            var cmd = new MySqlCommand(query, _db);
+
+            var dbAdapter = new MySqlDataAdapter(cmd);
+
+
+            dbAdapter.Fill(_dt);
+
+            dbAdapter.Dispose();
+            cmd.Dispose();
+
+            //Data.ItemsSource = _schedule;
+            Data.ItemsSource = _dt.DefaultView;
         }
 
         private void Name_TextChanged(object sender, TextChangedEventArgs e)
