@@ -242,13 +242,30 @@
             <TextBox x:Name="Version" HorizontalAlignment="Left" Height="23" Margin="464,7,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" IsReadOnly="True" IsUndoEnabled="True"/>
             <Label Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="38"/>
             <Label Content="Version:" HorizontalAlignment="Left" Margin="393,6,0,0" VerticalAlignment="Top" Width="53" Foreground="Black" Height="26"/>
-            <DataGrid  x:Name="_data" IsReadOnly="False" AutoGeneratingColumn="_data_AutoGeneratingColumn" KeyDown="_data_KeyDown"  CanUserAddRows="True" CanUserDeleteRows="True"   Height="210" Margin="0,111.4,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="3" RenderTransformOrigin="0,0.5" UseLayoutRounding="True" CanUserResizeColumns="False" MaxColumnWidth="Infinity"  >
+            <DataGrid  x:Name="_data" IsReadOnly="False" AutoGeneratingColumn="_data_AutoGeneratingColumn" KeyDown="_data_KeyDown"  CanUserAddRows="True" CanUserDeleteRows="True"   Height="210" Margin="0,111.4,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="3" RenderTransformOrigin="0,0.5" UseLayoutRounding="True" CanUserResizeColumns="False" MaxColumnWidth="Infinity" AutoGenerateColumns="False"  >
                 <DataGrid.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Add" Click="MenuItem_Add" />
                         <MenuItem Header="Delete" Click="MenuItem_Delete" />
                     </ContextMenu>
                 </DataGrid.ContextMenu>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header= "Reference Date">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding ref_day, StringFormat=\{0:dd/MM/yyyy\}}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                        <DataGridTemplateColumn.CellEditingTemplate>
+                            <DataTemplate>
+                                <DatePicker SelectedDate="{Binding ref_day}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellEditingTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header= "Coupon Date" Binding="{Binding date_coupon, StringFormat=\{0:dd/MM/yyyy\}}" />
+                    <DataGridTextColumn Header= "Days" Binding="{Binding no_days}" />
+                    <DataGridTextColumn Header= "Principal" Binding="{Binding principal}" />
+                </DataGrid.Columns>
             </DataGrid>
 
         </Grid>
