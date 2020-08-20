@@ -306,7 +306,7 @@ namespace BondAnalytics
                 cmd.Parameters.AddWithValue("@ref_day", dr["ref_day"]);
                 cmd.Parameters.AddWithValue("@date_coupon", dr["date_coupon"]);
                 cmd.Parameters.AddWithValue("@bond_version", Int32.Parse(Version.Text));
-                cmd.Parameters.AddWithValue("@no_days", dr["ref_day"]);
+                cmd.Parameters.AddWithValue("@no_days", dr["no_days"]);
                 cmd.Parameters.AddWithValue("@principal", dr["principal"]);
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
@@ -381,9 +381,11 @@ namespace BondAnalytics
 
             dbAdapter.Dispose();
             cmd.Dispose();
-            _data.ItemsSource = _dt.DefaultView;
+
             _dt.Columns.Remove("bond_name");
             _dt.Columns.Remove("bond_version");
+
+            _data.ItemsSource = _dt.DefaultView;
 
         }
 
