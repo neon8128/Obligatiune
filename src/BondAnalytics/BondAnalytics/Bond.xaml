@@ -145,8 +145,8 @@
             </StackPanel>
 
         </Grid>
-        <Grid x:Name="GridMain" Height="855" Background="White" DataContext="{StaticResource DataContext}">
-
+        <Grid x:Name="GridMain" Height="855" Background="White" DataContext="{StaticResource DataContext}"  >
+            
             <Grid.RowDefinitions>
                 <RowDefinition Height="61*"/>
                 <RowDefinition Height="61*"/>
@@ -158,6 +158,7 @@
 
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
+            
 
 
             <Grid.ColumnDefinitions>
@@ -179,7 +180,7 @@
 
 
             <TextBox x:Name="Name" Text="{Binding Name, NotifyOnValidationError=true, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true}" 
-                     HorizontalAlignment="Left" Height="23" Margin="100,4,0,0" TextWrapping="Wrap" Background="White" Foreground="Black" VerticalAlignment="Top" Width="170" SelectionBrush="Black" BorderBrush="Black" TextChanged="Name_TextChanged"/>
+                     HorizontalAlignment="Left" Height="23" Margin="100,4,0,0" TextWrapping="Wrap" Background="White" Foreground="Black" VerticalAlignment="Top" Width="170" SelectionBrush="Black" BorderBrush="Black"/>
             <TextBox x:Name="InterestRate" Text="{Binding InterestRate, NotifyOnValidationError=true, UpdateSourceTrigger=PropertyChanged, ValidatesOnDataErrors=true}"
                      HorizontalAlignment="Left" Height="23" Margin="100,32,0,0" TextWrapping="Wrap" Background="White" Foreground="Black" VerticalAlignment="Top" Width="170" SelectionBrush="Black" BorderBrush="Black"/>
             <TextBox x:Name="Ccy" 
@@ -241,8 +242,13 @@
             <TextBox x:Name="Version" HorizontalAlignment="Left" Height="23" Margin="464,7,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" IsReadOnly="True" IsUndoEnabled="True"/>
             <Label Content="Label" HorizontalAlignment="Left" VerticalAlignment="Top" Height="26" Width="38"/>
             <Label Content="Version:" HorizontalAlignment="Left" Margin="393,6,0,0" VerticalAlignment="Top" Width="53" Foreground="Black" Height="26"/>
-            <DataGrid  x:Name="Data" IsReadOnly="False"   CanUserAddRows="True" CanUserDeleteRows="True"   Height="210" Margin="0,111.4,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="3" RenderTransformOrigin="0,0.5" UseLayoutRounding="True" CanUserResizeColumns="False" MaxColumnWidth="Infinity">
-              
+            <DataGrid  x:Name="_data" IsReadOnly="False" AutoGeneratingColumn="_data_AutoGeneratingColumn" KeyDown="_data_KeyDown"  CanUserAddRows="True" CanUserDeleteRows="True"   Height="210" Margin="0,111.4,0,0" Grid.Row="1" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="3" RenderTransformOrigin="0,0.5" UseLayoutRounding="True" CanUserResizeColumns="False" MaxColumnWidth="Infinity"  >
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add" Click="MenuItem_Add" />
+                        <MenuItem Header="Delete" Click="MenuItem_Delete" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
             </DataGrid>
 
         </Grid>
