@@ -97,12 +97,9 @@ namespace BondAnalytics
             String DB = _dataBaseCombo.SelectionBoxItem.ToString();            
             String acquired_pass = GetCredential(DB, user.Text); //Get user credentials           
             //  Debug.Assert(GetCredential("Bond_calculator") == null);
-            if (acquired_pass != null) // if a password is saved in CredentialManager
+            if ( Connect(user.Text, acquired_pass) ) // if a password is saved in CredentialManager
             {
-                MessageBox.Show("Your password was saved in WCM, let me grab it");
-                
-                Connect(user.Text, acquired_pass);
-                
+                MessageBox.Show("Your password was saved in WCM, let me grab it");               
                 MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
                 this.Hide();
                 var afterLogin = new After_login(user.Text); //Go to the Login App page
