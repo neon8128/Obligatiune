@@ -51,7 +51,7 @@
     </Window.Resources>
 
 
-    <Grid Background="#2e3137">
+    <Grid Background="#2e3137" FocusManager.FocusedElement="{Binding ElementName=pass}">
         <PasswordBox x:Name="pass" Background="#545d6a" Foreground="White" FontSize="18" Margin="11,101,92,315.6"/>
         <Label Content="New Password" Foreground="White" Margin="11,74,92,349.6"/>
         <Button x:Name="btn" Click="btn_Click"  Content="Submit" Margin="40,247,183,170.6" Background="#545d6a" Foreground="White" FontSize="18" Height="Auto"/>

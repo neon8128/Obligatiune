@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ago 20, 2020 alle 16:39
+-- Creato il: Ago 24, 2020 alle 17:14
 -- Versione del server: 10.4.13-MariaDB
 -- Versione PHP: 7.4.8
 
@@ -682,7 +682,115 @@ INSERT INTO `audit` (`audit_id`, `username`, `TS`, `details`, `machine_name`, `i
 (697, 'admin', '2020-08-20 14:04:27', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
 (698, 'admin', '2020-08-20 16:28:48', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
 (699, 'admin', '2020-08-20 16:29:20', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
-(700, 'admin', '2020-08-20 16:29:40', 'bond', 'DESKTOP-0HGIVFC', '192.168.0.103');
+(700, 'admin', '2020-08-20 16:29:40', 'bond', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(701, 'admin', '2020-08-22 21:16:55', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(702, 'admin', '2020-08-22 21:18:04', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(703, 'admin', '2020-08-22 21:21:31', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(704, 'admin', '2020-08-22 21:23:13', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(705, 'admin', '2020-08-23 18:27:36', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(706, 'admin', '2020-08-23 18:29:21', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(707, 'admin', '2020-08-23 18:29:55', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(708, 'admin', '2020-08-23 19:26:22', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(709, 'admin', '2020-08-23 19:27:19', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(710, 'admin', '2020-08-23 19:28:44', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(713, 'admin', '2020-08-23 19:30:29', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(715, 'admin', '2020-08-23 19:31:38', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(717, 'admin', '2020-08-23 19:34:10', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(719, 'admin', '2020-08-23 19:37:54', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(721, 'admin', '2020-08-23 19:41:03', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(723, 'admin', '2020-08-23 19:42:03', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(725, 'admin', '2020-08-23 20:22:14', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(728, 'admin', '2020-08-23 20:26:38', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(729, 'admin', '2020-08-23 20:50:58', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(730, 'admin', '2020-08-23 21:10:46', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(731, 'admin', '2020-08-23 21:13:43', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(732, 'admin', '2020-08-23 21:16:59', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(733, 'admin', '2020-08-23 21:18:31', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(734, 'admin', '2020-08-23 21:21:53', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(735, 'admin', '2020-08-23 21:23:01', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(736, 'admin', '2020-08-24 00:47:25', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(737, 'admin', '2020-08-24 00:47:46', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(738, 'admin', '2020-08-24 00:50:25', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(739, 'admin', '2020-08-24 00:51:02', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(740, 'admin', '2020-08-24 00:51:42', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(741, 'admin', '2020-08-24 00:51:59', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(742, 'admin', '2020-08-24 00:55:13', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(743, 'admin', '2020-08-24 00:55:28', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(744, 'admin', '2020-08-24 01:00:15', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(746, 'admin', '2020-08-24 01:09:22', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(753, 'admin', '2020-08-24 01:18:10', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(756, 'admin', '2020-08-24 01:21:19', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(757, 'admin', '2020-08-24 01:21:31', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(758, 'admin', '2020-08-24 01:23:13', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.1.4'),
+(760, 'admin', '2020-08-24 12:46:43', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(761, 'admin', '2020-08-24 12:47:58', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(762, 'admin', '2020-08-24 12:48:47', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(763, 'admin', '2020-08-24 12:49:37', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(764, 'admin', '2020-08-24 12:51:21', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(768, 'admin', '2020-08-24 12:54:45', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(770, 'admin', '2020-08-24 13:00:37', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(771, 'admin', '2020-08-24 13:01:11', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(772, 'admin', '2020-08-24 13:03:28', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(773, 'admin', '2020-08-24 13:05:28', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(774, 'admin', '2020-08-24 13:06:07', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(776, 'admin', '2020-08-24 13:07:26', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(778, 'admin', '2020-08-24 13:11:43', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(782, 'admin', '2020-08-24 13:15:37', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(784, 'admin', '2020-08-24 13:30:07', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(787, 'admin', '2020-08-24 13:32:48', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(790, 'admin', '2020-08-24 13:46:33', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(792, 'admin', '2020-08-24 13:47:16', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(795, 'admin', '2020-08-24 13:50:16', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(797, 'admin', '2020-08-24 13:51:18', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(799, 'admin', '2020-08-24 13:54:50', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(801, 'admin', '2020-08-24 14:03:51', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(802, 'admin', '2020-08-24 14:04:04', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(804, 'admin', '2020-08-24 14:08:27', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(805, 'admin', '2020-08-24 14:09:03', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(806, 'admin', '2020-08-24 14:12:48', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(807, 'admin', '2020-08-24 14:13:05', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(808, 'admin', '2020-08-24 14:13:51', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(809, 'admin', '2020-08-24 14:14:47', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(810, 'admin', '2020-08-24 14:16:18', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(811, 'admin', '2020-08-24 14:24:57', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(812, 'admin', '2020-08-24 14:25:30', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(813, 'admin', '2020-08-24 14:26:02', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(814, 'admin', '2020-08-24 14:46:34', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(815, 'admin', '2020-08-24 14:46:55', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(816, 'admin', '2020-08-24 15:24:00', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(817, 'admin', '2020-08-24 15:24:55', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(818, 'admin', '2020-08-24 15:25:11', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(819, 'admin', '2020-08-24 15:26:56', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(820, 'admin', '2020-08-24 15:27:38', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(821, 'admin', '2020-08-24 15:28:48', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(824, 'admin', '2020-08-24 15:34:30', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(825, 'admin', '2020-08-24 15:35:05', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(826, 'admin', '2020-08-24 15:35:22', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(827, 'admin', '2020-08-24 15:35:44', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(828, 'admin', '2020-08-24 15:36:52', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(829, 'admin', '2020-08-24 15:37:23', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(830, 'admin', '2020-08-24 15:37:39', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(831, 'admin', '2020-08-24 15:37:52', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(833, 'admin', '2020-08-24 15:42:20', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(834, 'admin', '2020-08-24 15:42:29', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(835, 'admin', '2020-08-24 15:43:22', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(836, 'admin', '2020-08-24 15:44:35', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(837, 'admin', '2020-08-24 15:49:03', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(838, 'admin', '2020-08-24 15:53:33', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(839, 'admin', '2020-08-24 16:17:15', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(840, 'admin', '2020-08-24 16:19:20', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(842, 'admin', '2020-08-24 16:19:45', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(844, 'admin', '2020-08-24 16:38:32', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(845, 'admin', '2020-08-24 16:38:45', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(846, 'admin', '2020-08-24 16:45:37', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(847, 'admin', '2020-08-24 16:45:56', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(848, 'admin', '2020-08-24 16:48:43', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(849, 'admin', '2020-08-24 16:49:22', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(850, 'admin', '2020-08-24 16:49:49', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(851, 'admin', '2020-08-24 16:57:16', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(852, 'admin', '2020-08-24 16:57:49', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(854, 'admin', '2020-08-24 16:59:42', 'user logged in', 'DESKTOP-0HGIVFC', '192.168.0.103'),
+(855, 'admin', '2020-08-24 16:59:52', 'InterstRate', 'DESKTOP-0HGIVFC', '192.168.0.103');
 
 --
 -- Dump dei dati per la tabella `bond`
@@ -840,7 +948,41 @@ INSERT INTO `bond_hist` (`audit_id`, `name`, `version`, `interest_rate`, `ccy`, 
 (687, 'admin_test', 20, 3, 'eur', 1000, 'ACT/ACT', '2020-08-20', '2020-09-01'),
 (688, 'bond1', 20, 1.9, 'EUR', 1100, 'ACT/365', '2020-07-10', '2020-10-17'),
 (694, 'another', 8, 3, 'EUR', 10, 'ACT/365', '2020-08-20', '2021-10-01'),
+(700, 'bond1', 21, 1.9, 'EUR', 1100, 'ACT/365', '2020-07-10', '2020-10-17'),
 (700, 'bond1', 21, 1.9, 'EUR', 1100, 'ACT/365', '2020-07-10', '2020-10-17');
+
+--
+-- Dump dei dati per la tabella `interest_rate`
+--
+
+INSERT INTO `interest_rate` (`name`, `version`, `as_of_date`, `term`, `date`, `audit_id`, `rate`, `ccy`) VALUES
+('hello', 2, '2020-08-24', '3M', '2020-08-24', 831, 3.4, 'EUR'),
+('hello', 1, '2020-08-24', '3M', '2020-08-25', 834, 3.4, 'EUR'),
+('hello', 4, '2024-08-20', '1Y', '2024-08-20', 855, 3.7, 'EUR'),
+('hello', 3, '2024-08-20', '3M', '2024-08-20', 847, 3.4, 'EUR'),
+('testingChangingDates', 1, '2020-08-26', '3M', '2020-08-25', 835, 3.4, 'EUR');
+
+--
+-- Dump dei dati per la tabella `interest_rate_hist`
+--
+
+INSERT INTO `interest_rate_hist` (`name`, `version`, `as_of_date`, `term`, `date`, `audit_id`, `rate`, `ccy`) VALUES
+('hello', 1, '2020-08-23', '', '2020-08-23', 728, 3.2, 'eur'),
+('hello', 2, '2020-08-24', 'SPOT', '2020-08-24', 757, 3.2, 'eur'),
+('hello', 3, '2020-08-24', 'SPOT', '2020-08-24', 768, 3.3, 'eur'),
+('hello', 4, '2020-08-24', 'SPOT', '2020-08-24', 797, 3.4, 'eur'),
+('hello', 1, '2020-08-24', '3M', '2020-08-24', 802, 3.4, 'eur'),
+('hello', 1, '2020-08-24', '3M', '2020-08-24', 815, 3.4, 'eur'),
+('hello', 1, '2020-08-24', '1Y', '2020-08-24', 825, 3.4, 'eur'),
+('hello', 1, '2020-08-24', '1M', '2020-08-24', 826, 3.4, 'eur'),
+('hello', 2, '2020-08-24', '1Y', '2020-08-24', 829, 3.5, 'eur'),
+('hello', 3, '2020-08-24', '1Y', '2020-08-24', 830, 3.5, 'EUR'),
+('hello', 2, '2020-08-24', '3M', '2020-08-24', 831, 3.4, 'EUR'),
+('hello', 1, '2020-08-24', '3M', '2020-08-25', 834, 3.4, 'EUR'),
+('testingChangingDates', 1, '2020-08-26', '3M', '2020-08-25', 835, 3.4, 'EUR'),
+('hello', 2, '2020-08-24', '1M', '2020-08-24', 845, 3.4, 'EUR'),
+('hello', 3, '2024-08-20', '3M', '2024-08-20', 847, 3.4, 'EUR'),
+('hello', 4, '2024-08-20', '1Y', '2024-08-20', 855, 3.7, 'EUR');
 
 --
 -- Dump dei dati per la tabella `schedule`
