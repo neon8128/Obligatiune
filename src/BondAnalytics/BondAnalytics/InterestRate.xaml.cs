@@ -182,13 +182,15 @@ namespace BondAnalytics
             MySqlCommand cmd = null;
             bool ok = false;
             String name = Name.Text;
-            String asof = Convert.ToDateTime(AsOfDate.SelectedDate).ToString("yyyy/MM/dd");
-            String date = Convert.ToDateTime(Date.SelectedDate).ToString("yyyy/MM/dd");
+            var asof = (DateTime)AsOfDate.SelectedDate;
+            var date = (DateTime)Date.SelectedDate;
+            var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
+            var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
             String term = Term.Text;
 
             var getChanges = _dt.GetChanges();
-            cmd = new MySqlCommand($"Select version from interest_rate where Name='{name}' and as_of_date = '{asof}' and date ='{date}' and term='{term}'", _db);
-            Int32? version = (Int32?)cmd.ExecuteScalar();
+            cmd = new MySqlCommand($"Select version from interest_rate where Name='{name}' and as_of_date = {asofStr}  and date = {dateStr} and term='{term}'", _db);
+            var version = (Int32?)cmd.ExecuteScalar();
             if (version == null)
             {
                 version = 1;
@@ -197,16 +199,14 @@ namespace BondAnalytics
             else
             {
                 version++;
-
             }
-            cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = '{asof}' and date ='{date}' and term='{term}' ", _db);
-            var x = cmd.ExecuteNonQuery();
 
-            if (getChanges != null && !ok)
+            if ( getChanges != null || version > 1 )
             {
+                // if there are some changes made in the GUI or this is a new record
                 foreach(DataRow dr in getChanges.Rows)
                 {
-                    cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = '{dr["as_of_date"]}' and date ='{dr["date"]}' and term='{dr["term"]}' ", _db);
+                    cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = '{asofStr}' and date ='{dateStr}' and term='{dr["term"]}' and  ", _db);
                     var xx = cmd.ExecuteNonQuery();
                     using (cmd = new MySqlCommand("INSERT INTO interest_rate(name, audit_id,rate,ccy,date,as_of_date,version,term) VALUES (@name,@audit_id,@rate,@ccy,@date,@as_of_date,@version,@term)", _db))
                     {
@@ -214,8 +214,8 @@ namespace BondAnalytics
                         cmd.Parameters.AddWithValue("@audit_id", AuditId);
                         cmd.Parameters.AddWithValue("@rate", Double.Parse( dr["rate"].ToString() ));
                         cmd.Parameters.AddWithValue("@ccy", dr["ccy"].ToString() );
-                        cmd.Parameters.AddWithValue("@as_of_date", dr["as_of_date"].ToString() );
-                        cmd.Parameters.AddWithValue("@date", dr["date"].ToString());
+                        cmd.Parameters.AddWithValue("@as_of_date", dr["as_of_date"] );
+                        cmd.Parameters.AddWithValue("@date", dr["date"]);
                         cmd.Parameters.AddWithValue("@version", version);
                         cmd.Parameters.AddWithValue("@term", dr["term"].ToString());
                         cmd.ExecuteNonQuery();
@@ -225,9 +225,9 @@ namespace BondAnalytics
                 }
                 ok = true;
             } // inca nu merge chiar cum trebuie
-
-           else if (!ok)
+            else 
             {
+                // ther are no changes in the data table but the record is a new one
                 using (cmd = new MySqlCommand("INSERT INTO interest_rate(name, audit_id,rate,ccy,date,as_of_date,version,term) VALUES (@name,@audit_id,@rate,@ccy,@date,@as_of_date,@version,@term)", _db))
                 {
                     cmd.Parameters.AddWithValue("@name", Name.Text);
@@ -264,10 +264,12 @@ namespace BondAnalytics
 
         public void LoadList()
         {
-            String asof = Convert.ToDateTime(AsOfDate.SelectedDate).ToString("yyyy/MM/dd");
-            String date = Convert.ToDateTime(Date.SelectedDate).ToString("yyyy/MM/dd");
+            var asof = (DateTime)AsOfDate.SelectedDate;
+            var date = (DateTime)Date.SelectedDate;
+            var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
+            var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
             MySqlCommand cmd = null;
-            var query = $"Select rate,ccy,date,as_of_date,version,term from interest_rate  where Name='{Name.Text}' and as_of_date = '{asof}' and date ='{date}' and term='{Term.Text}' ";
+            var query = $"Select rate,ccy,date,as_of_date,version,term from interest_rate  where Name='{Name.Text}' and as_of_date = {asofStr} and date = {dateStr} and term='{Term.Text}' ";
             cmd = new MySqlCommand(query, _db);
             var dataAdapter = new MySqlDataAdapter(cmd);
             dataAdapter.Fill(_dt);
