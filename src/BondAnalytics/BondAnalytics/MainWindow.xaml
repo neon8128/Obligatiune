@@ -55,7 +55,7 @@
 
 
     <Grid Background="#2e3137">
-        <StackPanel Margin="20">
+        <StackPanel Margin="20" FocusManager.FocusedElement="{Binding ElementName=user}">
             <Button x:Name="CloseBtn"    Width="25" Height="26"   BorderThickness="0" Style="{StaticResource Close_btn}"  Click="CloseBtn_Click"   HorizontalAlignment="Right" IsCancel="True">
                 <Button.Background>
                     <ImageBrush ImageSource="Assets1/close_default.png" Stretch="Uniform"/>
