@@ -131,6 +131,9 @@
     <Compile Include="Bond.xaml.cs">
       <DependentUpon>Bond.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SavedInterestRate.xaml.cs">
+      <DependentUpon>SavedInterestRate.xaml</DependentUpon>
+    </Compile>
     <Compile Include="StaticDataManager.cs" />
     <Compile Include="ForgotPass.xaml.cs">
       <DependentUpon>ForgotPass.xaml</DependentUpon>
@@ -191,6 +194,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="SavedInterestRate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -227,8 +234,6 @@
     <Resource Include="Assets1\logout.png" />
     <Resource Include="Assets1\settings.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Validations\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

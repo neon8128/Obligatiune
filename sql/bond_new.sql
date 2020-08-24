@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 17, 2020 at 04:26 PM
--- Server version: 10.4.13-MariaDB
--- PHP Version: 7.4.8
+-- Creato il: Ago 24, 2020 alle 17:13
+-- Versione del server: 10.4.13-MariaDB
+-- Versione PHP: 7.4.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -24,7 +24,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `audit`
+-- Struttura della tabella `audit`
 --
 
 CREATE TABLE `audit` (
@@ -39,7 +39,7 @@ CREATE TABLE `audit` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bond`
+-- Struttura della tabella `bond`
 --
 
 CREATE TABLE `bond` (
@@ -48,7 +48,7 @@ CREATE TABLE `bond` (
   `audit_id` int(11) DEFAULT NULL,
   `interest_rate` double DEFAULT NULL,
   `ccy` varchar(45) DEFAULT NULL,
-  `principal` int(11) DEFAULT NULL,
+  `principal` double DEFAULT NULL,
   `day_counting_convention` varchar(45) DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL
@@ -57,7 +57,7 @@ CREATE TABLE `bond` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `bond_hist`
+-- Struttura della tabella `bond_hist`
 --
 
 CREATE TABLE `bond_hist` (
@@ -66,7 +66,7 @@ CREATE TABLE `bond_hist` (
   `version` int(11) NOT NULL DEFAULT 1,
   `interest_rate` double DEFAULT NULL,
   `ccy` varchar(45) DEFAULT NULL,
-  `principal` int(11) DEFAULT NULL,
+  `principal` double DEFAULT NULL,
   `day_counting_convention` varchar(45) DEFAULT 'ACT/365',
   `start_date` date DEFAULT NULL,
   `end_date` date DEFAULT NULL
@@ -75,7 +75,7 @@ CREATE TABLE `bond_hist` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `fxr`
+-- Struttura della tabella `fxr`
 --
 
 CREATE TABLE `fxr` (
@@ -92,7 +92,7 @@ CREATE TABLE `fxr` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `fxr_hist`
+-- Struttura della tabella `fxr_hist`
 --
 
 CREATE TABLE `fxr_hist` (
@@ -108,12 +108,29 @@ CREATE TABLE `fxr_hist` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `interest_rate`
+-- Struttura della tabella `interest_rate`
 --
 
 CREATE TABLE `interest_rate` (
   `name` varchar(45) NOT NULL,
   `version` int(11) NOT NULL DEFAULT 1,
+  `as_of_date` date NOT NULL,
+  `term` varchar(48) NOT NULL,
+  `date` date NOT NULL,
+  `audit_id` int(11) NOT NULL,
+  `rate` double NOT NULL,
+  `ccy` varchar(12) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Struttura della tabella `interest_rate_hist`
+--
+
+CREATE TABLE `interest_rate_hist` (
+  `name` varchar(45) NOT NULL,
+  `version` int(11) NOT NULL,
   `as_of_date` date NOT NULL,
   `term` varchar(12) NOT NULL,
   `date` date NOT NULL,
@@ -125,23 +142,7 @@ CREATE TABLE `interest_rate` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `interest_rate_hist`
---
-
-CREATE TABLE `interest_rate_hist` (
-  `name` varchar(45) NOT NULL,
-  `version` int(11) NOT NULL,
-  `as_of_date` date NOT NULL,
-  `term` varchar(12) NOT NULL,
-  `date` date NOT NULL,
-  `rate` double NOT NULL,
-  `ccy` varchar(12) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `schedule`
+-- Struttura della tabella `schedule`
 --
 
 CREATE TABLE `schedule` (
@@ -156,7 +157,7 @@ CREATE TABLE `schedule` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `schedule_hist`
+-- Struttura della tabella `schedule_hist`
 --
 
 CREATE TABLE `schedule_hist` (
@@ -171,7 +172,7 @@ CREATE TABLE `schedule_hist` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Struttura della tabella `user`
 --
 
 CREATE TABLE `user` (
@@ -186,7 +187,7 @@ CREATE TABLE `user` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_hist`
+-- Struttura della tabella `user_hist`
 --
 
 CREATE TABLE `user_hist` (
@@ -199,94 +200,82 @@ CREATE TABLE `user_hist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Indexes for dumped tables
+-- Indici per le tabelle scaricate
 --
 
 --
--- Indexes for table `audit`
+-- Indici per le tabelle `audit`
 --
 ALTER TABLE `audit`
   ADD PRIMARY KEY (`audit_id`);
 
 --
--- Indexes for table `bond`
+-- Indici per le tabelle `bond`
 --
 ALTER TABLE `bond`
   ADD PRIMARY KEY (`name`),
   ADD KEY `audit_id` (`audit_id`) USING BTREE;
 
 --
--- Indexes for table `fxr`
+-- Indici per le tabelle `fxr`
 --
 ALTER TABLE `fxr`
   ADD PRIMARY KEY (`name`),
   ADD KEY `audit_id` (`audit_id`);
 
 --
--- Indexes for table `interest_rate`
+-- Indici per le tabelle `interest_rate`
 --
 ALTER TABLE `interest_rate`
   ADD PRIMARY KEY (`name`,`as_of_date`,`term`,`date`),
   ADD KEY `audit_id` (`audit_id`);
 
 --
--- Indexes for table `interest_rate_hist`
+-- Indici per le tabelle `interest_rate_hist`
 --
 ALTER TABLE `interest_rate_hist`
   ADD KEY `name` (`name`,`as_of_date`,`term`,`date`);
 
 --
--- Indexes for table `schedule`
+-- Indici per le tabelle `schedule`
 --
 ALTER TABLE `schedule`
   ADD KEY `bond_name_schedule` (`bond_name`);
 
 --
--- Indexes for table `user`
+-- Indici per le tabelle `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`username`);
 
 --
--- Indexes for table `user_hist`
+-- Indici per le tabelle `user_hist`
 --
 ALTER TABLE `user_hist`
   ADD KEY `username_idx` (`username`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT per le tabelle scaricate
 --
 
 --
--- AUTO_INCREMENT for table `audit`
+-- AUTO_INCREMENT per la tabella `audit`
 --
 ALTER TABLE `audit`
   MODIFY `audit_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Constraints for dumped tables
+-- Limiti per le tabelle scaricate
 --
 
 --
--- Constraints for table `fxr`
+-- Limiti per la tabella `fxr`
 --
 ALTER TABLE `fxr`
   ADD CONSTRAINT `audit_fxr` FOREIGN KEY (`audit_id`) REFERENCES `bond`.`audit` (`audit_id`);
 
 --
--- Constraints for table `interest_rate`
---
-ALTER TABLE `interest_rate`
-  ADD CONSTRAINT `audit_interest` FOREIGN KEY (`audit_id`) REFERENCES `bond`.`audit` (`audit_id`);
-
---
--- Constraints for table `interest_rate_hist`
---
-ALTER TABLE `interest_rate_hist`
-  ADD CONSTRAINT `interest_con` FOREIGN KEY (`name`,`as_of_date`,`term`,`date`) REFERENCES `interest_rate` (`name`, `as_of_date`, `term`, `date`) ON UPDATE NO ACTION;
-
---
--- Constraints for table `user_hist`
+-- Limiti per la tabella `user_hist`
 --
 ALTER TABLE `user_hist`
   ADD CONSTRAINT `username_hist` FOREIGN KEY (`username`) REFERENCES `user` (`username`);

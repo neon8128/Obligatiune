@@ -178,6 +178,7 @@ namespace BondAnalytics
             dbTransaction.Dispose();
 
         }
+
         /// <summary>
         ///     Inserting in the audit table and return last inserted id in order to track user activity
         /// </summary>
