@@ -18,7 +18,7 @@ namespace BondAnalytics
     public partial class App : Application
     {
 
-         /*protected override void OnStartup(StartupEventArgs e)
+         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
         
@@ -29,6 +29,6 @@ namespace BondAnalytics
                          typeof(FrameworkElement),
                          new FrameworkPropertyMetadata(
                     XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
-        } */
+        } 
     }
 }

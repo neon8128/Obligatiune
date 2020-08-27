@@ -110,7 +110,6 @@ namespace BondAnalytics
             String newPass = ComputeSha256Hash(password.Password); //convert the pass to hash256
             if (Verify(_user, newPass))
             {
-                MessageBox.Show("You have successfully logged in as " + _user);
                 InsertAudit();
                 this.Close();
                 var r1 = new Real_main_window(_user);

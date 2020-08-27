@@ -45,14 +45,13 @@ namespace BondAnalytics
         public Interest_rate(DataRowView row, string User):this(User)
         {
             this.row = row;
+
             Name.Text = row["name"].ToString();
             Version.Text = row["version"].ToString();
             AsOfDate.Text = row["as_of_date"].ToString();
-            Rate.Text = row["rate"].ToString();
-            Term.Text = row["term"].ToString();
             Ccy.Text = row["ccy"].ToString();
-            Date.Text = row["date"].ToString();
             LoadList();
+
         }
 
         /// <summary>
@@ -180,17 +179,17 @@ namespace BondAnalytics
         public void InsertInterestRate(UInt64 AuditId)
         {
             MySqlCommand cmd = null;
-            bool ok = false;
             String name = Name.Text;
             var asof = (DateTime)AsOfDate.SelectedDate;
-            var date = (DateTime)Date.SelectedDate;
+            //  var date = (DateTime)Date.SelectedDate;
             var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
-            var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
-            String term = Term.Text;
+          //  var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
+            //String term = Term.Text;
 
             var getChanges = _dt.GetChanges();
-            cmd = new MySqlCommand($"Select version from interest_rate where Name='{name}' and as_of_date = {asofStr}  and date = {dateStr} and term='{term}'", _db);
+            cmd = new MySqlCommand($"Select version from interest_rate where Name='{name}' and as_of_date = {asofStr} and ccy = '{Ccy.Text}' ", _db);
             var version = (Int32?)cmd.ExecuteScalar();
+            
             if (version == null)
             {
                 version = 1;
@@ -205,42 +204,39 @@ namespace BondAnalytics
             {
                 // if there are some changes made in the GUI or this is a new record
                 foreach(DataRow dr in getChanges.Rows)
-                {
-                    cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = '{asofStr}' and date ='{dateStr}' and term='{dr["term"]}' and  ", _db);
-                    var xx = cmd.ExecuteNonQuery();
+                { // iterate through all rows from data table
+                    cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = {asofStr} and ccy = '{Ccy.Text}'", _db);
+                    var xx = cmd.ExecuteNonQuery(); // delete duplicates if any
                     using (cmd = new MySqlCommand("INSERT INTO interest_rate(name, audit_id,rate,ccy,date,as_of_date,version,term) VALUES (@name,@audit_id,@rate,@ccy,@date,@as_of_date,@version,@term)", _db))
                     {
                         cmd.Parameters.AddWithValue("@name", Name.Text);
                         cmd.Parameters.AddWithValue("@audit_id", AuditId);
-                        cmd.Parameters.AddWithValue("@rate", Double.Parse( dr["rate"].ToString() ));
-                        cmd.Parameters.AddWithValue("@ccy", dr["ccy"].ToString() );
-                        cmd.Parameters.AddWithValue("@as_of_date", dr["as_of_date"] );
+                        cmd.Parameters.AddWithValue("@rate", dr["rate"]);
+                        cmd.Parameters.AddWithValue("@ccy", Ccy.Text );
                         cmd.Parameters.AddWithValue("@date", dr["date"]);
+                        cmd.Parameters.AddWithValue("@as_of_date", asofStr);
                         cmd.Parameters.AddWithValue("@version", version);
-                        cmd.Parameters.AddWithValue("@term", dr["term"].ToString());
+                        cmd.Parameters.AddWithValue("@term", dr["term"]);
                         cmd.ExecuteNonQuery();
                         
                     }
                    
                 }
-                ok = true;
-            } // inca nu merge chiar cum trebuie
-            else 
+
+            } 
+            else if(getChanges == null && version ==1)
             {
                 // ther are no changes in the data table but the record is a new one
-                using (cmd = new MySqlCommand("INSERT INTO interest_rate(name, audit_id,rate,ccy,date,as_of_date,version,term) VALUES (@name,@audit_id,@rate,@ccy,@date,@as_of_date,@version,@term)", _db))
+                using (cmd = new MySqlCommand("INSERT INTO interest_rate(name, audit_id,ccy,as_of_date, version) VALUES(@name, @audit_id,@ccy,@as_of_date,@version)", _db))
                 {
                     cmd.Parameters.AddWithValue("@name", Name.Text);
                     cmd.Parameters.AddWithValue("@audit_id", AuditId);
-                    cmd.Parameters.AddWithValue("@rate", Double.Parse(Rate.Text));
                     cmd.Parameters.AddWithValue("@ccy", Ccy.Text);
-                    cmd.Parameters.AddWithValue("@as_of_date", AsOfDate.SelectedDate);
-                    cmd.Parameters.AddWithValue("@date", Date.SelectedDate);
+                    cmd.Parameters.AddWithValue("@as_of_date", asof);
                     cmd.Parameters.AddWithValue("@version", version);
-                    cmd.Parameters.AddWithValue("@term", Term.Text);
                     cmd.ExecuteNonQuery();
                 }
-                ok = true;
+
             }
 
             Version.Text = version.ToString();
@@ -265,18 +261,21 @@ namespace BondAnalytics
         public void LoadList()
         {
             var asof = (DateTime)AsOfDate.SelectedDate;
-            var date = (DateTime)Date.SelectedDate;
+            //var date = (DateTime)Date.SelectedDate;
             var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
-            var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
+           // var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
             MySqlCommand cmd = null;
-            var query = $"Select rate,ccy,date,as_of_date,version,term from interest_rate  where Name='{Name.Text}' and as_of_date = {asofStr} and date = {dateStr} and term='{Term.Text}' ";
+            var query = $"Select rate,ccy,date,as_of_date,version,term from interest_rate  where Name='{Name.Text}' and ccy = '{Ccy.Text}' ";
             cmd = new MySqlCommand(query, _db);
             var dataAdapter = new MySqlDataAdapter(cmd);
-            dataAdapter.Fill(_dt);
-            dataAdapter.Dispose();
-            cmd.Dispose();
-            _data.ItemsSource = _dt.DefaultView;
-
+          
+            
+                dataAdapter.Fill(_dt);
+                dataAdapter.Dispose();
+                cmd.Dispose();
+                _data.ItemsSource = _dt.DefaultView;
+             
+           
         }
 
 
@@ -287,20 +286,29 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void MenuItem_Delete(object sender, RoutedEventArgs e)
         {
+            var asof = (DateTime)AsOfDate.SelectedDate;
+            
+            var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
             MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
 
             if (messageBoxResult == MessageBoxResult.Yes)
-            {               
-                try
-                {
-                    DataRowView row = (DataRowView)_data.SelectedItem;
-                    _dt.Rows.Remove(row.Row);
-
+            {                               
+                DataRowView row = (DataRowView)_data.SelectedItem;
+                if(row != null)
+                { 
+                    // _dt.Rows.Remove(row.Row);
+                     var dateStr = $"STR_TO_DATE('{row["date"]}', '%d/%m/%Y')";
+                     var cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{Name.Text}' and as_of_date = {asofStr} and ccy = '{Ccy.Text}' and rate='{row["rate"]}' and term='{row["term"]}'",_db);
+                     var x=cmd.ExecuteNonQuery();
+                    _dt.Rows.Remove((DataRow) row.Row);
+                    _dt.AcceptChanges();
                 }
-                catch
+                else
                 {
-                    MessageBox.Show("Please select a row ");
+                    MessageBox.Show("Please select a row");
                 }
+                   
+                                
             }
         }
 
@@ -310,16 +318,24 @@ namespace BondAnalytics
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void MenuItem_Add(object sender, RoutedEventArgs e)
-        {
-            DataRow dr = _dt.NewRow();
-            var date = DateTime.Now.Date;
-            dr["as_of_date"] = date;
-            dr["date"] = date;
-            dr["rate"] = Double.Parse(Rate.Text);
-            dr["ccy"] = Ccy.Text;
-            dr["term"] = Term.Text;
-            _dt.Rows.Add(dr);
+        {   
+            if(_dt.Rows.Count>=1)
+            {
+                DataRow dr = _dt.NewRow();
+                var date = AsOfDate.SelectedDate;
+                dr["Rate"] = 1.2;
+                dr["Term"] = "1W";
+                _dt.Rows.Add(dr);
+            }
+            else
+            {
+                LoadList();
+                DataRow dr = _dt.NewRow();
+                dr["Rate"] = 1.2;
+                dr["Term"] = "1W";
+                _dt.Rows.Add(dr);
 
+            }
         }
 
         /// <summary>

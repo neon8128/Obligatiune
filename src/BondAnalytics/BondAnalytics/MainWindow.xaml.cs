@@ -99,8 +99,7 @@ namespace BondAnalytics
             //  Debug.Assert(GetCredential("Bond_calculator") == null);
             if ( Connect(user.Text, acquired_pass) ) // if a password is saved in CredentialManager
             {
-                MessageBox.Show("Your password was saved in WCM, let me grab it");               
-                MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
+               
                 this.Hide();
                 var afterLogin = new After_login(user.Text); //Go to the Login App page
                 afterLogin.Show();
@@ -109,7 +108,7 @@ namespace BondAnalytics
             else if (Connect(user.Text,pass.Password)) // if the password stored in the user table matches the pass from passwordbox go; otherwise retry 
             {
                
-               MessageBox.Show("HI " + user.Text + "!" + Environment.NewLine + "Now introduce your password for the app");
+              
                this.Hide();
                var after_Login = new After_login(user.Text);
                after_Login.Show();

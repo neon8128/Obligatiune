@@ -3,6 +3,7 @@ using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Configuration;
 using System.Data;
 using System.Diagnostics;
@@ -35,7 +36,8 @@ namespace BondAnalytics
         private String _acquired_pass;
         MySqlConnection _db;
         private BondItems _b;
-      
+       Dictionary<Int32, Tuple<String,Int32, Double>> _period = new Dictionary<Int32, Tuple<String,Int32, Double>>();
+
 
         public DataTable _dt = new DataTable();
 
@@ -513,6 +515,168 @@ namespace BondAnalytics
            //         DataGridOwner.CommitEdit();
            //     }
            // }
+        }
+
+        /// <summary>
+        /// Implementing linear interpolation with 2 given points with the respective coordinates 
+        /// and the abscissa of a third point
+        /// </summary>
+        /// <param name="X1"></param>
+        /// <param name="X2"></param>
+        /// <param name="X3"></param>
+        /// <param name="Y1"></param>
+        /// <param name="Y3"></param>
+        /// <returns></returns>
+        public double LinearInterpolation(DateTime X1, DateTime X2,DateTime X3, Double Y1,Double Y3)
+        {
+            double y2 = 0;
+
+            y2 = (((X2 - X1).Days) * (Y3 - Y1)) / ((X3 - X1).Days) + Y1;
+
+
+            return y2;
+        }
+
+        /// <summary>
+        /// Fill the dictionary with a string as a key (O/N,1W,1M, etc..) and a pair <Int32,double> 
+        /// where Int32 = no days and double  = interestRate
+        /// </summary>
+        public void FillDictionary()
+        {
+            try
+            {
+                var query = $"Select term, rate from interest_rate where name='{NameInterest.Text}'";
+                var cmd = new MySqlCommand(query, _db);
+                var reader = cmd.ExecuteReader();
+                Int32 i = 0;
+                while (reader.Read())
+                {
+                    String String = reader[0].ToString();                   
+                    switch (String)
+                    {
+                        case "O/N":
+                            
+                            _period.Add(i++, new Tuple<String,Int32, double>("O/N", 1, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        case "T/N":
+                            
+                            _period.Add(i++, new Tuple<String, Int32, double>("T/N", 2, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        case "1W":
+                            
+                            _period.Add(i++, new Tuple<String, Int32, double>("1W", 7, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        case "2W":
+                            
+                            _period.Add(i++, new Tuple<String, Int32, double>("2W", 14, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        case "1M":
+                           
+                            _period.Add(i++, new Tuple<String, Int32, double>("1M", 30, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        case "3M":
+                            
+                            _period.Add(i++, new Tuple<String, Int32, double>("3M", 90, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        case "1Y":
+                            
+                            _period.Add(i++, new Tuple<String, Int32, double>("1Y", 360, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        case "2Y":
+                           
+                            _period.Add(i++, new Tuple<String, Int32, double>("2Y", 720, Double.Parse(reader[1].ToString())));
+                            break;
+
+                        default:
+                           
+                            break;
+                    }
+                }
+                reader.Dispose();
+                cmd.Dispose();
+            }
+            catch (Exception f)
+            {
+                MessageBox.Show(f.ToString());
+            }
+        }
+
+        public Double GetInterestRate()
+        {
+            if(_period.Count == 0)
+            {
+                FillDictionary(); // fill the _period dictionary
+            }
+            
+            var asofdate = (DateTime)AsOfDate.SelectedDate;
+            var start = (DateTime)StartPick.SelectedDate;
+            Double rate = 0;
+
+            //number of days between startDate and a given date
+            var nodays = (Int32)(AsOfDate.SelectedDate.Value - StartPick.SelectedDate.Value).Days;
+
+            IEnumerator enumerator = _period.Keys.GetEnumerator();
+            enumerator.MoveNext();
+            if (_period.Count > 0) // if the dictionary has values
+
+            {
+                for (Int32 i=0; i<=_period.Count;i++) // iterate through dictionary
+                {
+                    Int32 j = i + 1;
+                    if (nodays == _period[i].Item2) // if nodays is equal to period from interestTable 
+                    {
+                        rate = _period[i].Item3;
+                        Rate.Text = _period[i].Item3.ToString();// write it in Rate Textbox
+                    }
+                    else if(_period.Count == 1)
+                    {
+                        MessageBox.Show("We need more values!");
+                        break;
+                    }
+                    else
+                    {                        
+                       
+                        if (asofdate > start.AddDays(_period[i].Item2) && asofdate < start.AddDays(_period[j].Item2))
+                        {
+                            rate = LinearInterpolation(start.AddDays(_period[i].Item2), asofdate, start.AddDays(_period[j].Item2), _period[i].Item3, _period[j].Item3);
+                            Rate.Text = rate.ToString();
+                            return rate;
+                        }
+
+                        else if (asofdate < start.AddDays(_period[i].Item2) && asofdate > start.AddDays(_period[j].Item2))
+                        {
+                            rate = LinearInterpolation(start.AddDays(_period[j].Item2), asofdate, start.AddDays(_period[i].Item2), _period[j].Item3, _period[i].Item3);
+                            Rate.Text = rate.ToString();
+                            return rate;
+                            
+                        }                        
+                    }
+                 }
+            }
+            return rate;
+        }
+        private void GetPrice_Click(object sender, RoutedEventArgs e)
+        {
+            //DateTime X1 = DateTime.ParseExact("14/08/2020", "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            //DateTime X2 = DateTime.ParseExact("07/09/2020", "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            //DateTime X3 = DateTime.ParseExact("14/10/2020", "dd/MM/yyyy", CultureInfo.InvariantCulture);
+
+            // Double y = LinearInterpolation(X1, X2, X3,0.1, 0.2);
+            //Price.Text = y.ToString();
+
+            double y = GetInterestRate() / 100;
+            Double principal = Double.Parse(Principal.Text);
+            Double price = principal + (1 + y * principal);
+            Price.Text = price.ToString();
+            
+
         }
     }
 }
