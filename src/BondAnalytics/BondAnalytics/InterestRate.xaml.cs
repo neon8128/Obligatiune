@@ -202,11 +202,12 @@ namespace BondAnalytics
 
             if ( getChanges != null || version > 1 )
             {
+                cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = {asofStr} and ccy = '{Ccy.Text}'", _db);
+                var xx = cmd.ExecuteNonQuery(); // delete duplicates if any
+
                 // if there are some changes made in the GUI or this is a new record
-                foreach(DataRow dr in getChanges.Rows)
+                foreach (DataRow dr in getChanges.Rows)
                 { // iterate through all rows from data table
-                    cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = {asofStr} and ccy = '{Ccy.Text}'", _db);
-                    var xx = cmd.ExecuteNonQuery(); // delete duplicates if any
                     using (cmd = new MySqlCommand("INSERT INTO interest_rate(name, audit_id,rate,ccy,date,as_of_date,version,term) VALUES (@name,@audit_id,@rate,@ccy,@date,@as_of_date,@version,@term)", _db))
                     {
                         cmd.Parameters.AddWithValue("@name", Name.Text);
@@ -214,13 +215,11 @@ namespace BondAnalytics
                         cmd.Parameters.AddWithValue("@rate", dr["rate"]);
                         cmd.Parameters.AddWithValue("@ccy", Ccy.Text );
                         cmd.Parameters.AddWithValue("@date", dr["date"]);
-                        cmd.Parameters.AddWithValue("@as_of_date", asofStr);
+                        cmd.Parameters.AddWithValue("@as_of_date", asof);
                         cmd.Parameters.AddWithValue("@version", version);
                         cmd.Parameters.AddWithValue("@term", dr["term"]);
                         cmd.ExecuteNonQuery();
-                        
                     }
-                   
                 }
 
             } 
