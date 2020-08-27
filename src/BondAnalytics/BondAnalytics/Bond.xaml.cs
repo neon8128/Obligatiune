@@ -537,12 +537,30 @@ namespace BondAnalytics
             return y2;
         }
 
+        public int MyListComparison(Tuple<String, Int32, double> x, Tuple<String, Int32, double> y)
+        {
+            return x.Item2 - y.Item2;
+        }
+
         /// <summary>
         /// Fill the dictionary with a string as a key (O/N,1W,1M, etc..) and a pair <Int32,double> 
         /// where Int32 = no days and double  = interestRate
         /// </summary>
         public void FillDictionary()
         {
+
+            var list = new List<Tuple<String, Int32, double>>();
+            list.Add( new Tuple<String, Int32, double>("O/N", 1, 0.5));
+            list.Add(new Tuple<String, Int32, double>("10Y", 10*365, 10));
+            list.Add(new Tuple<String, Int32, double>("1W", 7, 0.7));
+            list.Add(new Tuple<String, Int32, double>("2Y", 2 * 365, 2));
+
+            //var compFunc = new Comparison<Tuple<String, Int32, double>>(MyListComparison);
+
+            //list.Sort(compFunc);
+
+            list.Sort( (a,b) => { return a.Item2 - a.Item2; } );
+
             try
             {
                 var query = $"Select term, rate from interest_rate where name='{NameInterest.Text}'";
@@ -620,7 +638,7 @@ namespace BondAnalytics
             Double rate = 0;
 
             //number of days between startDate and a given date
-            var nodays = (Int32)(AsOfDate.SelectedDate.Value - StartPick.SelectedDate.Value).Days;
+            var nodays = (Int32)(asofdate - start).Days;
 
             IEnumerator enumerator = _period.Keys.GetEnumerator();
             enumerator.MoveNext();
