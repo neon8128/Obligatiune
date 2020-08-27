@@ -110,7 +110,12 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto">
             <DataGrid x:Name="_data" Height="524" Width="856"   MouseDoubleClick="DataGrid_MouseDoubleClick" CanUserAddRows="False"
               CanUserDeleteRows="False" IsReadOnly="True" SelectionChanged="DataGrid_SelectionChanged" AutoGenerateColumns="False">
-
+                <DataGrid.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Delete" Click="MenuItem_Delete" />
+                    </ContextMenu>
+                </DataGrid.ContextMenu>
+                
                 <DataGrid.Columns>
                     <DataGridTextColumn Header= "Name" Binding="{Binding name}" />
                     <DataGridTemplateColumn Header= "AsOfDate">
@@ -120,9 +125,9 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
+                    
+                    <DataGridTextColumn Header= "Name" Binding="{Binding ccy}" />
 
-                    <DataGridTextColumn Header= "Term" Binding="{Binding term}" />
-                    <DataGridTextColumn Header= "Version" Binding="{Binding version}" />
                 </DataGrid.Columns>
             </DataGrid>
             

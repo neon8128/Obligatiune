@@ -35,6 +35,8 @@ namespace BondAnalytics
         {
             this._user = User;
             LoadList();
+            _data.ItemsSource = null;
+            _data.ItemsSource = _dt.DefaultView;
         }
 
         /// <summary>
@@ -122,7 +124,8 @@ namespace BondAnalytics
         public void LoadList()
         {
             MySqlCommand cmd = null;
-            var query = $"Select * from interest_rate ";
+            _data.ItemsSource = null;
+            var query = $"select name,MAX(as_of_date) as as_of_date,ccy,MAX(version) as version,term,date from interest_rate GROUP BY name ";
 
             cmd = new MySqlCommand(query, _db);
 
@@ -157,6 +160,38 @@ namespace BondAnalytics
            
         }
 
+        /// <summary>
+        /// Delete row from menu item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MenuItem_Delete(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure?", "Delete Confirmation", System.Windows.MessageBoxButton.YesNo);
+
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                DataRowView row = (DataRowView)_data.SelectedItem;
+                var asofStr = $"STR_TO_DATE('{row["as_of_date"]}', '%d/%m/%Y')";
+                if (row != null)
+                {
+                    // _dt.Rows.Remove(row.Row);
+                  
+                    var cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{row["name"]}' and as_of_date = {asofStr} and ccy = '{row["ccy"]}' ", _db);
+                    var x = cmd.ExecuteNonQuery();
+                    _dt.Rows.Remove((DataRow)row.Row);
+                    _dt.AcceptChanges();
+                }
+                else
+                {
+                    MessageBox.Show("Please select a row");
+                }
+
+
+            }
+        }
+
+     
         private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
