@@ -36,7 +36,7 @@ namespace BondAnalytics
         private String _acquired_pass;
         MySqlConnection _db;
         private BondItems _b;
-       Dictionary<Int32, Tuple<String,Int32, Double>> _period = new Dictionary<Int32, Tuple<String,Int32, Double>>();
+        List<Tuple<String, Int32, double>> _list = new List<Tuple<String, Int32, double>>();
 
 
         public DataTable _dt = new DataTable();
@@ -548,22 +548,19 @@ namespace BondAnalytics
         /// </summary>
         public void FillDictionary()
         {
+            var asof = (DateTime)AsOfDate.SelectedDate;
+            var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
 
-            var list = new List<Tuple<String, Int32, double>>();
-            list.Add( new Tuple<String, Int32, double>("O/N", 1, 0.5));
-            list.Add(new Tuple<String, Int32, double>("10Y", 10*365, 10));
-            list.Add(new Tuple<String, Int32, double>("1W", 7, 0.7));
-            list.Add(new Tuple<String, Int32, double>("2Y", 2 * 365, 2));
 
             //var compFunc = new Comparison<Tuple<String, Int32, double>>(MyListComparison);
 
-            //list.Sort(compFunc);
+            //_list.Sort();
 
-            list.Sort( (a,b) => { return a.Item2 - a.Item2; } );
+            _list.Sort( (a,b) => { return a.Item2 - b.Item2; } );
 
             try
             {
-                var query = $"Select term, rate from interest_rate where name='{NameInterest.Text}'";
+                var query = $"Select term, rate from interest_rate where name='{NameInterest.Text}'and ccy='{Ccy.Text}' and as_of_date={asofStr}";
                 var cmd = new MySqlCommand(query, _db);
                 var reader = cmd.ExecuteReader();
                 Int32 i = 0;
@@ -574,42 +571,42 @@ namespace BondAnalytics
                     {
                         case "O/N":
                             
-                            _period.Add(i++, new Tuple<String,Int32, double>("O/N", 1, Double.Parse(reader[1].ToString())));
+                            _list.Add( new Tuple<String,Int32, double>("O/N", 1, Double.Parse(reader[1].ToString())));
                             break;
 
                         case "T/N":
                             
-                            _period.Add(i++, new Tuple<String, Int32, double>("T/N", 2, Double.Parse(reader[1].ToString())));
+                            _list.Add(new Tuple<String, Int32, double>("T/N", 2, Double.Parse(reader[1].ToString())));
                             break;
 
                         case "1W":
                             
-                            _period.Add(i++, new Tuple<String, Int32, double>("1W", 7, Double.Parse(reader[1].ToString())));
+                            _list.Add(new Tuple<String, Int32, double>("1W", 7, Double.Parse(reader[1].ToString())));
                             break;
 
                         case "2W":
                             
-                            _period.Add(i++, new Tuple<String, Int32, double>("2W", 14, Double.Parse(reader[1].ToString())));
+                            _list.Add(new Tuple<String, Int32, double>("2W", 14, Double.Parse(reader[1].ToString())));
                             break;
 
                         case "1M":
                            
-                            _period.Add(i++, new Tuple<String, Int32, double>("1M", 30, Double.Parse(reader[1].ToString())));
+                            _list.Add(new Tuple<String, Int32, double>("1M", 30, Double.Parse(reader[1].ToString())));
                             break;
 
                         case "3M":
                             
-                            _period.Add(i++, new Tuple<String, Int32, double>("3M", 90, Double.Parse(reader[1].ToString())));
+                            _list.Add(new Tuple<String, Int32, double>("3M", 90, Double.Parse(reader[1].ToString())));
                             break;
 
                         case "1Y":
                             
-                            _period.Add(i++, new Tuple<String, Int32, double>("1Y", 360, Double.Parse(reader[1].ToString())));
+                            _list.Add(new Tuple<String, Int32, double>("1Y", 360, Double.Parse(reader[1].ToString())));
                             break;
 
                         case "2Y":
                            
-                            _period.Add(i++, new Tuple<String, Int32, double>("2Y", 720, Double.Parse(reader[1].ToString())));
+                            _list.Add(new Tuple<String, Int32, double>("2Y", 720, Double.Parse(reader[1].ToString())));
                             break;
 
                         default:
@@ -628,9 +625,9 @@ namespace BondAnalytics
 
         public Double GetInterestRate()
         {
-            if(_period.Count == 0)
+            if(_list.Count == 0)
             {
-                FillDictionary(); // fill the _period dictionary
+                FillDictionary(); // fill the _list dictionary
             }
             
             var asofdate = (DateTime)AsOfDate.SelectedDate;
@@ -640,42 +637,41 @@ namespace BondAnalytics
             //number of days between startDate and a given date
             var nodays = (Int32)(asofdate - start).Days;
 
-            IEnumerator enumerator = _period.Keys.GetEnumerator();
-            enumerator.MoveNext();
-            if (_period.Count > 0) // if the dictionary has values
+          
+            if (_list.Count > 0) // if the list has values
 
             {
-                for (Int32 i=0; i<=_period.Count;i++) // iterate through dictionary
+                for (Int32 i=0; i<=_list.Count;i++) // iterate through the list
                 {
-                    Int32 j = i + 1;
-                    if (nodays == _period[i].Item2) // if nodays is equal to period from interestTable 
+
+                    if (nodays == _list[i].Item2) // if nodays is equal to _list from interestTable 
                     {
-                        rate = _period[i].Item3;
-                        Rate.Text = _period[i].Item3.ToString();// write it in Rate Textbox
+                        rate = _list[i].Item3;
+                        Rate.Text = _list[i].Item3.ToString();// write it in Rate Textbox
                     }
-                    else if(_period.Count == 1)
+                    else if(_list.Count == 1)
                     {
                         MessageBox.Show("We need more values!");
                         break;
                     }
-                    else
-                    {                        
-                       
-                        if (asofdate > start.AddDays(_period[i].Item2) && asofdate < start.AddDays(_period[j].Item2))
-                        {
-                            rate = LinearInterpolation(start.AddDays(_period[i].Item2), asofdate, start.AddDays(_period[j].Item2), _period[i].Item3, _period[j].Item3);
-                            Rate.Text = rate.ToString();
-                            return rate;
-                        }
-
-                        else if (asofdate < start.AddDays(_period[i].Item2) && asofdate > start.AddDays(_period[j].Item2))
-                        {
-                            rate = LinearInterpolation(start.AddDays(_period[j].Item2), asofdate, start.AddDays(_period[i].Item2), _period[j].Item3, _period[i].Item3);
-                            Rate.Text = rate.ToString();
-                            return rate;
-                            
-                        }                        
-                    }
+                  //  else
+                  //  {                        
+                  //     
+                  //      if (asofdate > start.AddDays(_list[i].Item2) && asofdate < start.AddDays(_list[j].Item2))
+                  //      {
+                  //          rate = LinearInterpolation(start.AddDays(_list[i].Item2), asofdate, start.AddDays(_list[j].Item2), _list[i].Item3, _list[j].Item3);
+                  //          Rate.Text = rate.ToString();
+                  //          return rate;
+                  //      }
+                  //
+                  //      else if (asofdate < start.AddDays(_list[i].Item2) && asofdate > start.AddDays(_list[j].Item2))
+                  //      {
+                  //          rate = LinearInterpolation(start.AddDays(_list[j].Item2), asofdate, start.AddDays(_list[i].Item2), _list[j].Item3, _list[i].Item3);
+                  //          Rate.Text = rate.ToString();
+                  //          return rate;
+                  //          
+                  //      }                        
+                    //}
                  }
             }
             return rate;

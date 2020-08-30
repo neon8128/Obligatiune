@@ -181,7 +181,6 @@ namespace BondAnalytics
             MySqlCommand cmd = null;
             String name = Name.Text;
             var asof = (DateTime)AsOfDate.SelectedDate;
-            //  var date = (DateTime)Date.SelectedDate;
             var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
           //  var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
             //String term = Term.Text;
@@ -202,8 +201,8 @@ namespace BondAnalytics
 
             if ( getChanges != null || version > 1 )
             {
-                cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = {asofStr} and ccy = '{Ccy.Text}'", _db);
-                var xx = cmd.ExecuteNonQuery(); // delete duplicates if any
+               // cmd = new MySqlCommand($"DELETE FROM interest_rate where Name='{name}' and as_of_date = {asofStr} and ccy = '{Ccy.Text}'", _db);
+               // var xx = cmd.ExecuteNonQuery(); // delete duplicates if any
 
                 // if there are some changes made in the GUI or this is a new record
                 foreach (DataRow dr in getChanges.Rows)
