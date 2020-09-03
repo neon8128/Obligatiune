@@ -125,7 +125,7 @@ namespace BondAnalytics
         {
             MySqlCommand cmd = null;
             _data.ItemsSource = null;
-            var query = $"select name,as_of_date,ccy,version,term,date from interest_rate  ";
+            var query = $"select name,as_of_date,ccy,version,term,date from interest_rate group by as_of_date  ";
 
             cmd = new MySqlCommand(query, _db);
 
