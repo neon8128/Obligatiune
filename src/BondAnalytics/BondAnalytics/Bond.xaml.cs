@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Messaging;
+﻿using BondAnalytics.Calculations;
+using GalaSoft.MvvmLight.Messaging;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
@@ -36,7 +37,8 @@ namespace BondAnalytics
         private String _acquired_pass;
         MySqlConnection _db;
         private BondItems _b;
-       Dictionary<Int32, Tuple<String,Int32, Double>> _period = new Dictionary<Int32, Tuple<String,Int32, Double>>();
+        List<Tuple<String, Int32, double>> _interestList = new List<Tuple<string, int, double>>();
+        List<Tuple<DateTime, DateTime>> _scheduleList = new List<Tuple<DateTime, DateTime>>();
 
 
         public DataTable _dt = new DataTable();
@@ -46,6 +48,8 @@ namespace BondAnalytics
         {
             InitializeComponent();
             _db = StaticDataManager.GetStaticDataManager().DBConnection;
+            
+
         }
 
         public Bond(String User) : this()
@@ -267,32 +271,8 @@ namespace BondAnalytics
         /// </summary>
         public void InsertSchedule()
         {
-            // Schedule item = Data.SelectedItem as Schedule;
-
-          //  var changesDT = _dt.GetChanges();
-
-
-            // if (changesDT == null)
-            // {
-            //     return;
-            // }
-            // else
-            // {
-            //   foreach(DataRow dr in changesDT.Rows)
-            //   {
-            //      var noDays = (Int32)( DateTime.Parse(dr["ref_day"].ToString()) - StartPick.SelectedDate.Value).Days;
-            //   }
-            // }
-            // todo: check values for null when computing noDays
 
             MySqlCommand cmd = null;
-
-            // todo: you need to save all the records, not only one
-
-            // var q = $"Select version from bond where name = '{(String)changesDT.Rows[0]["bond_name"]}'";
-            // cmd = new MySqlCommand(q, _db);
-            // Int32 version = (Int32)cmd.ExecuteScalar();
-
             var q = $"Delete  from schedule where bond_name ='{Name.Text}'";
             cmd = new MySqlCommand(q, _db);
             var c = cmd.ExecuteNonQuery();
@@ -314,9 +294,6 @@ namespace BondAnalytics
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
             }
-            /*  */
-
-            /*}*/
         }
 
         public void InsertScheduleHist()
@@ -477,223 +454,44 @@ namespace BondAnalytics
 
         private void _data_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (e.PropertyType == typeof(DateTime))
-            {
-
-                e.Column = new DataGridDateTimeColumn((DataGridBoundColumn)e.Column);
-            }
-        }
-
-        internal class DataGridDateTimeColumn : DataGridBoundColumn
-        {
-            public DataGridDateTimeColumn(DataGridBoundColumn column)
-            {
-                Header = column.Header;
-                Binding = (Binding)column.Binding;
-            }
-
-            protected override FrameworkElement GenerateElement(DataGridCell cell, object dataItem)
-            {
-                var control = new TextBlock();
-                BindingOperations.SetBinding(control, TextBlock.TextProperty, Binding);
-                return control;
-            }
-
-            protected override FrameworkElement GenerateEditingElement(DataGridCell cell, object dataItem)
-            {
-                var control = new DatePicker();
-               // control.PreviewKeyDown += Control_PreviewKeyDown;
-                BindingOperations.SetBinding(control, DatePicker.SelectedDateProperty, Binding);
-                BindingOperations.SetBinding(control, DatePicker.DisplayDateProperty, Binding);
-                return control;
-            }
-
-           // private void Control_PreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-           // {
-           //     if (e.Key == System.Windows.Input.Key.Return)
-           //     {
-           //         DataGridOwner.CommitEdit();
-           //     }
-           // }
-        }
-
-        /// <summary>
-        /// Implementing linear interpolation with 2 given points with the respective coordinates 
-        /// and the abscissa of a third point
-        /// </summary>
-        /// <param name="X1"></param>
-        /// <param name="X2"></param>
-        /// <param name="X3"></param>
-        /// <param name="Y1"></param>
-        /// <param name="Y3"></param>
-        /// <returns></returns>
-        public double LinearInterpolation(DateTime X1, DateTime X2,DateTime X3, Double Y1,Double Y3)
-        {
-            double y2 = 0;
-
-            y2 = (((X2 - X1).Days) * (Y3 - Y1)) / ((X3 - X1).Days) + Y1;
-
-
-            return y2;
-        }
-
-        public int MyListComparison(Tuple<String, Int32, double> x, Tuple<String, Int32, double> y)
-        {
-            return x.Item2 - y.Item2;
-        }
-
-        /// <summary>
-        /// Fill the dictionary with a string as a key (O/N,1W,1M, etc..) and a pair <Int32,double> 
-        /// where Int32 = no days and double  = interestRate
-        /// </summary>
-        public void FillDictionary()
-        {
-
-            var list = new List<Tuple<String, Int32, double>>();
-            list.Add( new Tuple<String, Int32, double>("O/N", 1, 0.5));
-            list.Add(new Tuple<String, Int32, double>("10Y", 10*365, 10));
-            list.Add(new Tuple<String, Int32, double>("1W", 7, 0.7));
-            list.Add(new Tuple<String, Int32, double>("2Y", 2 * 365, 2));
-
-            //var compFunc = new Comparison<Tuple<String, Int32, double>>(MyListComparison);
-
-            //list.Sort(compFunc);
-
-            list.Sort( (a,b) => { return a.Item2 - a.Item2; } );
-
-            try
-            {
-                var query = $"Select term, rate from interest_rate where name='{NameInterest.Text}'";
-                var cmd = new MySqlCommand(query, _db);
-                var reader = cmd.ExecuteReader();
-                Int32 i = 0;
-                while (reader.Read())
-                {
-                    String String = reader[0].ToString();                   
-                    switch (String)
-                    {
-                        case "O/N":
-                            
-                            _period.Add(i++, new Tuple<String,Int32, double>("O/N", 1, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        case "T/N":
-                            
-                            _period.Add(i++, new Tuple<String, Int32, double>("T/N", 2, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        case "1W":
-                            
-                            _period.Add(i++, new Tuple<String, Int32, double>("1W", 7, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        case "2W":
-                            
-                            _period.Add(i++, new Tuple<String, Int32, double>("2W", 14, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        case "1M":
-                           
-                            _period.Add(i++, new Tuple<String, Int32, double>("1M", 30, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        case "3M":
-                            
-                            _period.Add(i++, new Tuple<String, Int32, double>("3M", 90, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        case "1Y":
-                            
-                            _period.Add(i++, new Tuple<String, Int32, double>("1Y", 360, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        case "2Y":
-                           
-                            _period.Add(i++, new Tuple<String, Int32, double>("2Y", 720, Double.Parse(reader[1].ToString())));
-                            break;
-
-                        default:
-                           
-                            break;
-                    }
-                }
-                reader.Dispose();
-                cmd.Dispose();
-            }
-            catch (Exception f)
-            {
-                MessageBox.Show(f.ToString());
-            }
-        }
-
-        public Double GetInterestRate()
-        {
-            if(_period.Count == 0)
-            {
-                FillDictionary(); // fill the _period dictionary
-            }
             
-            var asofdate = (DateTime)AsOfDate.SelectedDate;
-            var start = (DateTime)StartPick.SelectedDate;
-            Double rate = 0;
-
-            //number of days between startDate and a given date
-            var nodays = (Int32)(asofdate - start).Days;
-
-            IEnumerator enumerator = _period.Keys.GetEnumerator();
-            enumerator.MoveNext();
-            if (_period.Count > 0) // if the dictionary has values
-
-            {
-                for (Int32 i=0; i<=_period.Count;i++) // iterate through dictionary
-                {
-                    Int32 j = i + 1;
-                    if (nodays == _period[i].Item2) // if nodays is equal to period from interestTable 
-                    {
-                        rate = _period[i].Item3;
-                        Rate.Text = _period[i].Item3.ToString();// write it in Rate Textbox
-                    }
-                    else if(_period.Count == 1)
-                    {
-                        MessageBox.Show("We need more values!");
-                        break;
-                    }
-                    else
-                    {                        
-                       
-                        if (asofdate > start.AddDays(_period[i].Item2) && asofdate < start.AddDays(_period[j].Item2))
-                        {
-                            rate = LinearInterpolation(start.AddDays(_period[i].Item2), asofdate, start.AddDays(_period[j].Item2), _period[i].Item3, _period[j].Item3);
-                            Rate.Text = rate.ToString();
-                            return rate;
-                        }
-
-                        else if (asofdate < start.AddDays(_period[i].Item2) && asofdate > start.AddDays(_period[j].Item2))
-                        {
-                            rate = LinearInterpolation(start.AddDays(_period[j].Item2), asofdate, start.AddDays(_period[i].Item2), _period[j].Item3, _period[i].Item3);
-                            Rate.Text = rate.ToString();
-                            return rate;
-                            
-                        }                        
-                    }
-                 }
-            }
-            return rate;
         }
+
+       
+
+        
+       
+
         private void GetPrice_Click(object sender, RoutedEventArgs e)
         {
-            //DateTime X1 = DateTime.ParseExact("14/08/2020", "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            //DateTime X2 = DateTime.ParseExact("07/09/2020", "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            //DateTime X3 = DateTime.ParseExact("14/10/2020", "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            Lists lists = new Lists();
+            var asof = (DateTime)AsOfDate.SelectedDate;
+            GetCashFlow getCashFlow = new GetCashFlow();
+            ZeroRate z = new ZeroRate();
+            var principal = Double.Parse(Principal.Text);
+            var interestRate = Double.Parse(InterestRate.Text);
 
-            // Double y = LinearInterpolation(X1, X2, X3,0.1, 0.2);
-            //Price.Text = y.ToString();
+            _interestList = lists.GetInterestList(NameInterest.Text, Ccy.Text,asof); // get list from interestTable
+            _scheduleList = lists.GetScheduleList(Name.Text);// get list from schedule table
 
-            double y = GetInterestRate() / 100;
-            Double principal = Double.Parse(Principal.Text);
-            Double price = principal + (1 + y * principal);
-            Price.Text = price.ToString();
-            
+            Double FinalSum = 0;
+
+            for(Int32 i =0; i<_scheduleList.Count; i++)
+            {
+                Double sum = 0;
+                var zeroRate = (Double)z.LinearInterpolation(_scheduleList[i].Item2,_interestList); // get interest rate at payday
+
+                sum = sum + getCashFlow.GetFlow(_scheduleList[i].Item1, _scheduleList[i].Item2, principal, interestRate);
+                if(_scheduleList[i] ==_scheduleList[_scheduleList.Count-1]) // if we are at the last pair 
+                {
+                    sum = sum + principal;
+                }
+
+                FinalSum = FinalSum + getCashFlow.GetFlow(asof, _scheduleList[i].Item2,sum,zeroRate);
+
+            }
+
+           // Price.Text = sum.ToString();
 
         }
     }

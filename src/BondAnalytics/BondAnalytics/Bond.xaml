@@ -280,11 +280,9 @@
                 </DataGrid.Columns>
             </DataGrid>
             <TextBox x:Name="NameInterest" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="164.6,51,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120"/>
-            <TextBox x:Name="Rate" Grid.Column="1" HorizontalAlignment="Left" MaxLength="3" Height="23" Margin="163.6,87,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120"/>
             <Label Content="Name:" Grid.Column="1" HorizontalAlignment="Left" Margin="96.6,48,0,47.6" Foreground="Black" RenderTransformOrigin="0.961,0.628"/>
-            <Label Content="Interest Rate:" Grid.Column="1" HorizontalAlignment="Left" Margin="71.6,83,0,12.6" Foreground="Black" Width="90"/>
-            <Label Content="As of Date:" Grid.Column="1" HorizontalAlignment="Left" Margin="75.6,0.4,0,96" Foreground="Black" Grid.Row="1"/>
-            <DatePicker x:Name="AsOfDate"  Text="{Binding date, StringFormat=\{0:dd/MM/yyyy\}}" HorizontalAlignment="Left" Margin="159.6,1.4,0,0" Grid.Row="1" VerticalAlignment="Top" Foreground="Black" Style="{StaticResource DatePickerStyle}" Height="31" Width="106"  SelectedDate="{x:Static sys:DateTime.Now}" Grid.Column="1" >
+            <Label Content="As of Date:" Grid.Column="1" HorizontalAlignment="Left" Margin="82.6,85,0,10.6" Foreground="Black" RenderTransformOrigin="0.569,-0.431"/>
+            <DatePicker x:Name="AsOfDate"  Text="{Binding date, StringFormat=\{0:dd/MM/yyyy\}}" HorizontalAlignment="Left" Margin="167.6,82,0,0" VerticalAlignment="Top" Foreground="Black" Style="{StaticResource DatePickerStyle}" Height="31" Width="117"  SelectedDate="{x:Static sys:DateTime.Now}" Grid.Column="1" >
                 <DatePicker.Background>
                     <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                         <GradientStop Color="White" Offset="0"/>

@@ -126,7 +126,7 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     
-                    <DataGridTextColumn Header= "Name" Binding="{Binding ccy}" />
+                    <DataGridTextColumn Header= "Currency" Binding="{Binding ccy}" />
 
                 </DataGrid.Columns>
             </DataGrid>
