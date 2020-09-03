@@ -482,7 +482,7 @@ namespace BondAnalytics
                 for (Int32 i = 0; i < _scheduleList.Count; i++)
                 {
                     Double sum = 0;
-                    var zeroRate = (Double)z.LinearInterpolation(_scheduleList[i].Item2, _interestList); // get interest rate at payday
+                    var zeroRate = (Double)z.LinearInterpolation(asof, _scheduleList[i].Item2, _interestList); // get interest rate at payday
 
                     sum = sum + getCashFlow.GetCash(_scheduleList[i].Item1, _scheduleList[i].Item2, principal, interestRate);
                     if (_scheduleList[i] == _scheduleList[_scheduleList.Count - 1]) // if we are at the last pair 

@@ -19,19 +19,19 @@ namespace BondAnalytics.Calculations
         /// <param name="Y1"></param>
         /// <param name="Y3"></param>
         /// <returns></returns>
-        public double LinearInterpolation(DateTime X2, List<Tuple<String, Int32, double>> _interestList)
+        public double LinearInterpolation(DateTime AsOfDate, DateTime X2, List<Tuple<String, Int32, double>> _interestList)
         {
             Double y2 = 0;
 
             for (int i = 0; i < _interestList.Count - 1; i++)
             {
-                var BeforeDate = X2.AddDays(_interestList[i].Item2);
-                var AfterDate = X2.AddDays(_interestList[++i].Item2);
+                var BeforeDate = AsOfDate.AddDays(_interestList[i].Item2);
+                var AfterDate = AsOfDate.AddDays(_interestList[i+1].Item2);
 
 
                 if (X2 > BeforeDate && X2 < AfterDate)
                 {
-                    y2 = (((X2 - BeforeDate).Days) * (_interestList[++i].Item3 - _interestList[i].Item3)) / ((AfterDate - BeforeDate).Days) + _interestList[i].Item3;
+                    y2 = (((X2 - BeforeDate).Days) * (_interestList[i+1].Item3 - _interestList[i].Item3)) / ((AfterDate - BeforeDate).Days) + _interestList[i].Item3;
 
                     return y2;
                 }
