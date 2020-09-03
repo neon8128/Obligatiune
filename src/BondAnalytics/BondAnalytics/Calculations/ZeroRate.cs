@@ -8,11 +8,6 @@ namespace BondAnalytics.Calculations
 {
     class ZeroRate
     {
-        public Double OnTime(Double Principal, Double Rate)
-        {
-            var interest = Rate / 100 * Principal;
-            return Principal + interest;
-        }
 
         /// <summary>
         /// Implementing linear interpolation with 2 given points with the respective coordinates 
@@ -45,23 +40,6 @@ namespace BondAnalytics.Calculations
             return y2;
            
         }
-
-
-        public Tuple<DateTime, DateTime, Double, Double> GetBestInterval(DateTime Find, List<Tuple<String, Int32, double>> _interestList)
-        {
-            for (int i = 0; i < _interestList.Count - 1; i++)
-            {
-                var BeforeDate = Find.AddDays(_interestList[i].Item2);
-                var AfterDate = Find.AddDays(_interestList[++i].Item2);
-
-
-                if (Find > BeforeDate && Find < AfterDate)
-                {
-                    return Tuple.Create(BeforeDate, AfterDate, _interestList[i].Item3, _interestList[i++].Item3);
-                }
-
-            }
-            return null;
-        }
+      
     }
 }

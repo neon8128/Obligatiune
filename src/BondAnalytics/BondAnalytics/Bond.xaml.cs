@@ -459,39 +459,52 @@ namespace BondAnalytics
 
        
 
+        /// <summary>
+        /// Calculate price of the bond
+        /// </summary>
+        /// <returns></returns>
+        public double GetCurrentPrice()
+        {
+            Lists lists = new Lists();
+            GetCashFlow getCashFlow = new GetCashFlow();
+            ZeroRate z = new ZeroRate();
+            var asof = (DateTime)AsOfDate.SelectedDate;
+            var principal = Double.Parse(Principal.Text);
+            var interestRate = Double.Parse(InterestRate.Text);
+
+            _interestList = lists.GetInterestList(NameInterest.Text, Ccy.Text, asof); // get list from interestTable
+            _scheduleList = lists.GetScheduleList(Name.Text);// get list from schedule table
+
+            Double FinalSum = 0;
+
+            if (_scheduleList.Count > 0)
+            {
+                for (Int32 i = 0; i < _scheduleList.Count; i++)
+                {
+                    Double sum = 0;
+                    var zeroRate = (Double)z.LinearInterpolation(_scheduleList[i].Item2, _interestList); // get interest rate at payday
+
+                    sum = sum + getCashFlow.GetCash(_scheduleList[i].Item1, _scheduleList[i].Item2, principal, interestRate);
+                    if (_scheduleList[i] == _scheduleList[_scheduleList.Count - 1]) // if we are at the last pair 
+                    {
+                        sum = sum + principal;
+                    }
+
+                    FinalSum = FinalSum + getCashFlow.GetCash(asof, _scheduleList[i].Item2, sum, zeroRate);
+
+                }
+            }
+        
+            return FinalSum;
+        }
         
        
 
         private void GetPrice_Click(object sender, RoutedEventArgs e)
         {
-            Lists lists = new Lists();
-            var asof = (DateTime)AsOfDate.SelectedDate;
-            GetCashFlow getCashFlow = new GetCashFlow();
-            ZeroRate z = new ZeroRate();
-            var principal = Double.Parse(Principal.Text);
-            var interestRate = Double.Parse(InterestRate.Text);
+            Double FinalSum = GetCurrentPrice();
 
-            _interestList = lists.GetInterestList(NameInterest.Text, Ccy.Text,asof); // get list from interestTable
-            _scheduleList = lists.GetScheduleList(Name.Text);// get list from schedule table
-
-            Double FinalSum = 0;
-
-            for(Int32 i =0; i<_scheduleList.Count; i++)
-            {
-                Double sum = 0;
-                var zeroRate = (Double)z.LinearInterpolation(_scheduleList[i].Item2,_interestList); // get interest rate at payday
-
-                sum = sum + getCashFlow.GetFlow(_scheduleList[i].Item1, _scheduleList[i].Item2, principal, interestRate);
-                if(_scheduleList[i] ==_scheduleList[_scheduleList.Count-1]) // if we are at the last pair 
-                {
-                    sum = sum + principal;
-                }
-
-                FinalSum = FinalSum + getCashFlow.GetFlow(asof, _scheduleList[i].Item2,sum,zeroRate);
-
-            }
-
-           // Price.Text = sum.ToString();
+            Price.Text = FinalSum.ToString();
 
         }
     }
