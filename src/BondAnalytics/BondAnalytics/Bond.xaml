@@ -242,7 +242,7 @@
             <Button x:Name="Load" Content="Load" HorizontalAlignment="Left" Margin="262,81.4,0,0" Grid.Row="3" VerticalAlignment="Top" Width="150" BorderBrush="#FFF7F2F2" Background="#FFEAEAEA" Click="Load_Click"/>
             <TextBox x:Name="Version" HorizontalAlignment="Left" Height="23" Margin="464,7,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Grid.ColumnSpan="2" IsReadOnly="True" IsUndoEnabled="True"/>
             <Label Content="Version:" HorizontalAlignment="Left" Margin="393,6,0,0" VerticalAlignment="Top" Width="53" Foreground="Black" Height="26"/>
-            <DataGrid  x:Name="_data" IsReadOnly="False" AutoGeneratingColumn="_data_AutoGeneratingColumn" KeyDown="_data_KeyDown"  CanUserAddRows="True" CanUserDeleteRows="True"   Height="180" Margin="0,19,1,0" Grid.Row="2" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2" RenderTransformOrigin="0,0.5" UseLayoutRounding="True" CanUserResizeColumns="False" MaxColumnWidth="Infinity" AutoGenerateColumns="False"  >
+            <DataGrid  x:Name="_data" IsReadOnly="False" AutoGeneratingColumn="_data_AutoGeneratingColumn" KeyDown="_data_KeyDown"  CanUserAddRows="True"  CanUserDeleteRows="True"   Height="180" Margin="0,19,1,0" Grid.Row="2" VerticalAlignment="Top" Grid.ColumnSpan="2" Grid.RowSpan="2" RenderTransformOrigin="0,0.5" UseLayoutRounding="True" CanUserResizeColumns="False" MaxColumnWidth="Infinity" AutoGenerateColumns="False"  >
                 <DataGrid.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Add" Click="MenuItem_Add" />
@@ -278,6 +278,7 @@
                     <DataGridTextColumn Header= "Days" Binding="{Binding no_days}" />
                     <DataGridTextColumn Header= "Principal" Binding="{Binding principal}" />
                 </DataGrid.Columns>
+               
             </DataGrid>
             <TextBox x:Name="NameInterest" Grid.Column="1" HorizontalAlignment="Left" Height="23" Margin="164.6,51,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120"/>
             <Label Content="Name:" Grid.Column="1" HorizontalAlignment="Left" Margin="96.6,48,0,47.6" Foreground="Black" RenderTransformOrigin="0.961,0.628"/>

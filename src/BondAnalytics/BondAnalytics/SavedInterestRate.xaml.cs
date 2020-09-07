@@ -154,7 +154,7 @@ namespace BondAnalytics
                 MessageBox.Show("Please select a row");
                 return;
             }
-            var r = new Interest_rate(row, _user);
+            var r = new Interest_rate(row,_user);
             r.Show();
             this.Hide();
            

@@ -159,7 +159,7 @@
     <Compile Include="Bond.xaml.cs">
       <DependentUpon>Bond.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Calculations\GetCashFlow.cs" />
+    <Compile Include="Calculations\CashFlow.cs" />
     <Compile Include="Calculations\Lists.cs" />
     <Compile Include="Calculations\ZeroRate.cs" />
     <Compile Include="SavedInterestRate.xaml.cs">
