@@ -51,7 +51,47 @@
 
         </Style>
 
+        <Style x:Key="DatePickerStyle"  TargetType="{x:Type DatePicker}">
+            <Setter Property="Foreground" Value="DarkBlue" />
+            <Setter Property="IsTodayHighlighted" Value="True" />
+            <Setter Property="SelectedDateFormat" Value="Short" />
+            <Setter Property="Background" Value="Transparent" />
 
+        </Style>
+
+        <Style x:Key="DatePickerTextBoxStyle" TargetType="DatePickerTextBox">
+            <Setter Property="Visibility" Value="Hidden"/>
+
+
+        </Style>
+
+
+        <!-- <Style TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="5,0,5,0" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style> -->
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,2,40,2" />
+            <Setter Property="Validation.ErrorTemplate">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <DockPanel LastChildFill="true">
+                            <Border Background="OrangeRed" DockPanel.Dock="right" Margin="5,0,0,0" Width="20" Height="20" CornerRadius="5"
+                                    ToolTip="{Binding ElementName=customAdorner, Path=AdornedElement.(Validation.Errors)[0].ErrorContent}">
+                                <TextBlock Text="!" VerticalAlignment="center" HorizontalAlignment="center" FontWeight="Bold" Foreground="white" />
+                            </Border>
+                            <AdornedElementPlaceholder Name="customAdorner" VerticalAlignment="Center" >
+                                <Border BorderBrush="Red" BorderThickness="1" />
+                            </AdornedElementPlaceholder>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <local:Validation x:Key="DataContext"/>
+        <Thickness x:Key="Thickness1">1</Thickness>
 
     </Window.Resources>
 
@@ -99,7 +139,7 @@
                     <Button  Uid="0" Width="150" Content="BOND" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
                     <Button  Uid="1" Width="150" Content="FXR" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
                     <Button  Uid="2" Width="150" Content="INTEREST RATE" Height="50" Background="{x:Null}" BorderBrush="{x:Null}" Foreground="White"  VerticalAlignment="Top"  Click="Button_Click"/>
-                    
+
                 </StackPanel>
 
                 <!--   <Grid x:Name="GridCursor" Width="150" Height="5" Background="White" HorizontalAlignment="Left"  /> -->
@@ -113,8 +153,20 @@
                 <RowDefinition Height="100"/>
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
-
-            <Button Content="THis is the FX window" Grid.Row="0"></Button>
+            <ComboBox x:Name="_comboCcy1" HorizontalAlignment="Left" Margin="145,92,0,0" VerticalAlignment="Top" Width="120" BorderBrush="Black" SelectionChanged="_comboExchange_SelectionChanged" Grid.RowSpan="2"/>
+            <ComboBox x:Name="_comboCcy2"  HorizontalAlignment="Left" Margin="145,63,0,0" VerticalAlignment="Top" Width="120" BorderBrush="Black" Grid.Row="1" >
+                <ComboBoxItem Content="RON" HorizontalAlignment="Left" Width="118.4" Foreground="Black"/>
+            </ComboBox>
+            <TextBox x:Name="_rate" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="490,5,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120" Grid.Row="1" TextChanged="_rate_TextChanged" />
+            <Label Content="From" HorizontalAlignment="Left" Margin="90,94,0,0" VerticalAlignment="Top" Foreground="Black" Grid.RowSpan="2"/>
+            <Label Content="To" HorizontalAlignment="Left" Margin="90,73,0,0" VerticalAlignment="Top" Foreground="Black" Grid.Row="1"/>
+            <Label Content="Rate" HorizontalAlignment="Left" Margin="549,75,0,0" VerticalAlignment="Top" Foreground="Black" RenderTransformOrigin="0.526,0.5"/>
+            <TextBox x:Name="_sum"  HorizontalAlignment="Left" Height="23" Margin="305,5,0,0"  Text="1"
+                     
+                     TextWrapping="Wrap"  VerticalAlignment="Top" Width="120" Grid.Row="1" TextChanged="Sum_TextChanged" />
+            <Label Content="Sum" HorizontalAlignment="Left" Margin="359,82,0,0" VerticalAlignment="Top" Foreground="Black" RenderTransformOrigin="0.526,0.5" Grid.RowSpan="2"/>
+            <TextBox x:Name="_result" IsReadOnly="True" HorizontalAlignment="Left" Height="23" Margin="410,69,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="120" Grid.Row="1" />
+            <Label Content="Result" HorizontalAlignment="Left" Margin="445,45,0,0" VerticalAlignment="Top" Foreground="Black" RenderTransformOrigin="0.526,0.5" Grid.Row="1"/>
         </Grid>
     </StackPanel>
 </Window>

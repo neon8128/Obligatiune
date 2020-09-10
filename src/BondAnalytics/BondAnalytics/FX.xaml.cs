@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BondAnalytics.ExchangeRateData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,15 +23,18 @@ namespace BondAnalytics
     public partial class FX : Window
     {
         private string _user;
+        public List<Tuple<String, Double>> _exchangeData = new List<Tuple<string, double>>();
 
         public FX()
         {
             InitializeComponent();
+            GetData();
+            
         }
 
-        public FX(string User)
+        public FX(string User):this()
         {
-            InitializeComponent();
+            
             this._user = User;
         }
 
@@ -86,6 +90,65 @@ namespace BondAnalytics
         {
             if (e.ChangedButton == MouseButton.Left)
                 this.DragMove();
+        }
+
+        public void GetData()
+        {
+            ExchangeTable exchange = new ExchangeTable();
+            _exchangeData = exchange.GetExchangeRate(); //get list from exchange site
+            if (_exchangeData.Count > 0)
+            {
+                for (Int32 i = 0; i < _exchangeData.Count; i++)
+                {
+                    _comboCcy1.Items.Add(_exchangeData[i].Item1);
+                }
+                _comboCcy1.Text = _comboCcy1.Items[0].ToString();
+                _comboCcy2.Text = "RON";
+            }
+          
+
+        }
+
+
+        private void _comboExchange_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            foreach (var item in _exchangeData)
+            {
+                if (item.Item1 == _comboCcy1.SelectedItem)
+                {
+                    _rate.Text = item.Item2.ToString();
+                }
+            }
+        }
+
+        private void Sum_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var sum = Double.Parse(_sum.Text);
+                var rate = Double.Parse(_rate.Text);
+                _result.Text = (sum * rate).ToString();
+            }
+            catch (Exception f)
+            {
+                // do nothing
+            }
+
+
+        }
+
+        private void _rate_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                var sum = Double.Parse(_sum.Text);
+                var rate = Double.Parse(_rate.Text);
+                _result.Text = (sum * rate).ToString();
+            }
+            catch (Exception f)
+            {
+                // do nothing
+            }
         }
     }
 }

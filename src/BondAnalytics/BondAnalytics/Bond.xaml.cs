@@ -216,8 +216,8 @@ namespace BondAnalytics
         public void InsertBond(UInt64 AuditId)
         {
             MySqlCommand cmd = null;
-            String DayItem = DayCountingConvention.SelectionBoxItem.ToString();
-            String name = Name.Text;
+            var DayItem = DayCountingConvention.SelectionBoxItem.ToString();
+            var name = Name.Text;
 
 
             cmd = new MySqlCommand($"Select version from bond where Name='{Name.Text}'", _db);
