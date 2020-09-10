@@ -511,7 +511,7 @@ namespace BondAnalytics
                         // if there is only one item in schedule
                         // and we are not at the last pair
                     {
-                        sum = sum + getCashFlow.GetDiscoutendCashFlow(_scheduleList[i].Item2, _scheduleList[i + 1].Item2, principal, interestRate);
+                        sum = getCashFlow.GetDiscoutendCashFlow(_scheduleList[i].Item2, _scheduleList[i + 1].Item2, principal, interestRate);
                         FinalSum = FinalSum + getCashFlow.GetCurrentCashFlow(asof, _scheduleList[i].Item2, sum, zeroRate);
                     }
                    
@@ -523,7 +523,7 @@ namespace BondAnalytics
                        // {
                        //     MessageBox.Show("Not enough data in interestList");
                        // }
-                        sum = sum +principal;
+                        sum = principal;
                         FinalSum = FinalSum + getCashFlow.GetCurrentCashFlow(asof, endDate, sum, 1.8);
                     }
                 }
