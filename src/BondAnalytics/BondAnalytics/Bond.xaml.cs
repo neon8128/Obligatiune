@@ -519,10 +519,10 @@ namespace BondAnalytics
                     if (_scheduleList[i] == _scheduleList[_scheduleList.Count - 1] || _scheduleList.Count == 1) // if we are at the last pair 
                     {
                          var zeroRateFinal = (Double)z.LinearInterpolation(asof, endDate, _interestList);
-                        if(zeroRateFinal == 0)
-                        {
-                            MessageBox.Show("Not enough data in interestList");
-                        }
+                       // if(zeroRateFinal == 0)
+                       // {
+                       //     MessageBox.Show("Not enough data in interestList");
+                       // }
                         sum = sum +principal;
                         FinalSum = FinalSum + getCashFlow.GetCurrentCashFlow(asof, endDate, sum, 1.8);
                     }
