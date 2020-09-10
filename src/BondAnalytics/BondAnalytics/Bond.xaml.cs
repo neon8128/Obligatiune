@@ -216,8 +216,8 @@ namespace BondAnalytics
         public void InsertBond(UInt64 AuditId)
         {
             MySqlCommand cmd = null;
-            String DayItem = DayCountingConvention.SelectionBoxItem.ToString();
-            String name = Name.Text;
+            var DayItem = DayCountingConvention.SelectionBoxItem.ToString();
+            var name = Name.Text;
 
 
             cmd = new MySqlCommand($"Select version from bond where Name='{Name.Text}'", _db);
@@ -401,14 +401,30 @@ namespace BondAnalytics
         /// <param name="e"></param>
         private void MenuItem_Add(object sender, RoutedEventArgs e)
         {
-            DataRow dr = _dt.NewRow();
-            var ref_day = DateTime.Now.Date;
-            var nodays = (ref_day - StartPick.SelectedDate.Value).Days;
-            dr["ref_day"] = ref_day;
-            dr["date_coupon"] = ref_day;
-            dr["no_days"] = nodays;
-            dr["principal"] = Int32.Parse(Principal.Text);
-            _dt.Rows.Add(dr);
+            var ref_day = DateTime.Now;          
+            
+        
+            if(_dt.Rows.Count > 0)
+            {
+                var start = (DateTime)StartPick.SelectedDate;
+                var nodays = (ref_day - start).Days;
+                var principal = Int32.Parse(Principal.Text);
+                DataRow dr = _dt.NewRow();
+                dr["date_coupon"] = ref_day.AddYears(1);
+                dr["no_days"] = nodays;
+                dr["principal"] = principal;
+                _dt.Rows.Add(dr);
+            }
+            else
+            {
+                LoadList();
+                DataRow dr = _dt.NewRow();
+                _dt.Rows.Add(dr);
+
+            }
+          
+            
+            
 
         }
        
@@ -466,44 +482,61 @@ namespace BondAnalytics
         public double GetCurrentPrice()
         {
             Lists lists = new Lists();
-            GetCashFlow getCashFlow = new GetCashFlow();
+            CashFlow getCashFlow = new CashFlow();
             ZeroRate z = new ZeroRate();
             var asof = (DateTime)AsOfDate.SelectedDate;
             var principal = Double.Parse(Principal.Text);
             var interestRate = Double.Parse(InterestRate.Text);
+            var startDate = (DateTime)StartPick.SelectedDate;
+            var endDate = (DateTime)EndPick.SelectedDate;
 
             _interestList = lists.GetInterestList(NameInterest.Text, Ccy.Text, asof); // get list from interestTable
             _scheduleList = lists.GetScheduleList(Name.Text);// get list from schedule table
 
             Double FinalSum = 0;
+            Double sum = getCashFlow.GetDiscoutendCashFlow(startDate, _scheduleList[0].Item2, principal, interestRate);
 
             if (_scheduleList.Count > 0)
             {
                 for (Int32 i = 0; i < _scheduleList.Count; i++)
                 {
-                    Double sum = 0;
-                    var zeroRate = (Double)z.LinearInterpolation(asof, _scheduleList[i].Item2, _interestList); // get interest rate at payday
 
-                    sum = sum + getCashFlow.GetCash(_scheduleList[i].Item1, _scheduleList[i].Item2, principal, interestRate);
-                    if (_scheduleList[i] == _scheduleList[_scheduleList.Count - 1]) // if we are at the last pair 
+                   var zeroRate = (Double)z.LinearInterpolation(asof, _scheduleList[i].Item2, _interestList); // get interest rate at payday
+                    if(i == 0)
                     {
-                        sum = sum + principal;
+                        FinalSum = FinalSum + getCashFlow.GetCurrentCashFlow(asof, _scheduleList[0].Item2, sum, 1.6);
                     }
+                                     
+                    if (_scheduleList.Count > 1 && _scheduleList[i] != _scheduleList[_scheduleList.Count - 1]) 
+                        // if there is only one item in schedule
+                        // and we are not at the last pair
+                    {
+                        sum = sum + getCashFlow.GetDiscoutendCashFlow(_scheduleList[i].Item2, _scheduleList[i + 1].Item2, principal, interestRate);
+                        FinalSum = FinalSum + getCashFlow.GetCurrentCashFlow(asof, _scheduleList[i].Item2, sum, zeroRate);
+                    }
+                   
 
-                    FinalSum = FinalSum + getCashFlow.GetCash(asof, _scheduleList[i].Item2, sum, zeroRate);
-
+                    if (_scheduleList[i] == _scheduleList[_scheduleList.Count - 1] || _scheduleList.Count == 1) // if we are at the last pair 
+                    {
+                         var zeroRateFinal = (Double)z.LinearInterpolation(asof, endDate, _interestList);
+                       // if(zeroRateFinal == 0)
+                       // {
+                       //     MessageBox.Show("Not enough data in interestList");
+                       // }
+                        sum = sum +principal;
+                        FinalSum = FinalSum + getCashFlow.GetCurrentCashFlow(asof, endDate, sum, 1.8);
+                    }
                 }
             }
         
-            return FinalSum;
+            return (FinalSum/principal)*100;
         }
         
        
 
         private void GetPrice_Click(object sender, RoutedEventArgs e)
         {
-            Double FinalSum = GetCurrentPrice();
-
+            Double FinalSum = Math.Round(GetCurrentPrice(), 3);
             Price.Text = FinalSum.ToString();
 
         }

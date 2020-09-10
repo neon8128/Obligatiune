@@ -42,7 +42,7 @@ namespace BondAnalytics
  
         }
 
-        public Interest_rate(DataRowView row, string User):this(User)
+        public Interest_rate(DataRowView row, String User):this(User)
         {
             this.row = row;
 
@@ -263,7 +263,7 @@ namespace BondAnalytics
             var asofStr = $"STR_TO_DATE('{asof.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
            // var dateStr = $"STR_TO_DATE('{date.ToString("dd/MM/yyyy")}', '%d/%m/%Y')";
             MySqlCommand cmd = null;
-            var query = $"Select rate,ccy,date,as_of_date,version,term from interest_rate  where Name='{Name.Text}' and ccy = '{Ccy.Text}' ";
+            var query = $"Select rate,ccy,date,as_of_date,version,term from interest_rate  where Name='{Name.Text}' and ccy = '{Ccy.Text}' and as_of_date={asofStr} ";
             cmd = new MySqlCommand(query, _db);
             var dataAdapter = new MySqlDataAdapter(cmd);
           
