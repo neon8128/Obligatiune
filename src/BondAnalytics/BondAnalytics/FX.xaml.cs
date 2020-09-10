@@ -1,6 +1,7 @@
 ﻿using BondAnalytics.ExchangeRateData;
 using System;
 using System.Collections.Generic;
+using MySql.Data.MySqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,10 +25,12 @@ namespace BondAnalytics
     {
         private string _user;
         public List<Tuple<String, Double>> _exchangeData = new List<Tuple<string, double>>();
+        MySqlConnection _db;
 
         public FX()
         {
             InitializeComponent();
+            _db = StaticDataManager.GetStaticDataManager().DBConnection;
             GetData();
             
         }
